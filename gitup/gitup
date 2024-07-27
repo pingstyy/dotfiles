@@ -9,3 +9,13 @@ $ git push https:git/usr/repo.git
 [Prompt]
 > user.name
 > Password/Auth Token
+
+
+
+# Auth Token thingy
+# Repo
+  # Select Repo
+  # files -> Fine Grained Tokens
+  # Only Repo Permissions -> 2
+    # Contents , metadata(default & mandatory)
+    #  Read and Write access to code and commit statuses
