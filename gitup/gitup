@@ -1,0 +1,11 @@
+$ git init
+$ git add .
+$ git config --global user.email "email@dot.com"
+$ git config --global user.name "usrname"
+$ git commit -m "msg"
+$ git remote add origin https:github/usr/repo.git
+$ git push https:git/usr/repo.git
+
+[Prompt]
+> user.name
+> Password/Auth Token
