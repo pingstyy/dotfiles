@@ -1,0 +1,41 @@
+                      ||||                        ||||                      ||||
+
+
+
+Here are some useful commands to switch between, create, and destroy windows in tmux:
+
+
+
+Switch between windows:
+
+Ctrl+b (or prefix key) + 0-9: Switch to the window with the corresponding number.
+Ctrl+b (or prefix key) + n: Switch to the next window.
+Ctrl+b (or prefix key) + p: Switch to the previous window.
+Ctrl+b (or prefix key) + l: List all windows and their numbers.
+
+
+
+
+Create a new window:
+
+Ctrl+b (or prefix key) + c: Create a new window.
+Ctrl+b (or prefix key) + w: Create a new window and switch to it.
+
+
+
+
+Destroy a window:
+
+Ctrl+b (or prefix key) + &: Kill the current window.
+Ctrl+b (or prefix key) + d: Detach from the current window (this will close the window, but you can reattach to it later).
+
+
+
+
+
+Other useful commands:
+
+Ctrl+b (or prefix key) + space: Rename the current window.
+Ctrl+b (or prefix key) + z: Suspend the current window (this will put the window in the background, but you can resume it later).
+Ctrl+b (or prefix key) + x: Close the current window (this will delete the window and all its panes).
+Note: The prefix key is usually set to Ctrl+b by default, but you can change it to another key combination if you prefer
