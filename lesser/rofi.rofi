@@ -1,0 +1,24 @@
+After install rofi we can type terminal following command to run rofi 
+
+  rofi show <mode>      mode =  run or window
+  
+we can also add keybord shortcuts to run rofi in lubuntu 
+go to .config/openbox there you will find lubuntu-rc.xml file this file contain all shortcuts our system 
+we need to add addition shortcuts 
+
+<keybind key="W-space">
+      <action name="Execute">
+        <command>rofi -show window </command>
+      </action>
+</keybind>
+
+* W = super / window key 
+  C = control key
+  A = alt key
+  S = Shift
+
+after that restart the openbox 
+
+  openbox --restart
+
+we can use combi in rofi 
