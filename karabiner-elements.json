@@ -1,0 +1,109 @@
+{
+  "description": "Vim-like Scrolling with J, K, H, L and Page Top/Bottom",
+  "manipulators": [
+    // Scroll Down (Cmd + j)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "j",
+        "modifiers": {
+          "mandatory": [
+            "command"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "down_arrow"
+        }
+      ]
+    },
+    // Scroll Up (Cmd + k)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "k",
+        "modifiers": {
+          "mandatory": [
+            "command"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "up_arrow"
+        }
+      ]
+    },
+    // Scroll Left (Cmd + h)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "h",
+        "modifiers": {
+          "mandatory": [
+            "command"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "left_arrow"
+        }
+      ]
+    },
+    // Scroll Right (Cmd + l)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "l",
+        "modifiers": {
+          "mandatory": [
+            "command"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "right_arrow"
+        }
+      ]
+    },
+    // Scroll to Top (Option + Cmd + k)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "k",
+        "modifiers": {
+          "mandatory": [
+            "command",
+            "option"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "page_up"
+        }
+      ]
+    },
+    // Scroll to Bottom (Option + Cmd + j)
+    {
+      "type": "basic",
+      "from": {
+        "key_code": "j",
+        "modifiers": {
+          "mandatory": [
+            "command",
+            "option"
+          ]
+        }
+      },
+      "to": [
+        {
+          "key_code": "page_down"
+        }
+      ]
+    }
+  ]
+}
