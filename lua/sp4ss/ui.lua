@@ -28,3 +28,36 @@ vim.keymap.set("n", "K", function()
         end
     end
 end, { desc = "Rndr Hover Preview / LSP Hover" })
+
+-- 1. Strip Neovim's UI background colors so it's transparent inside
+local clear_bg = function()
+    vim.cmd([[
+    highlight Normal guibg=none ctermbg=none
+    highlight NormalNC guibg=none ctermbg=none
+    highlight NonText guibg=none ctermbg=none
+    highlight SignColumn guibg=none ctermbg=none
+    highlight StatusLine guibg=none ctermbg=none
+    highlight NeoTreeNormal guibg=none ctermbg=none
+  ]])
+end
+
+clear_bg()
+
+-- 2. Dynamically swap Ghostty's wallpaper when Neovim opens/closes
+local image_path = vim.fn.expand("$HOME/.config/nvim/assets/logo-bg.jpg")
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        -- Set background image and set opacity tint so text is readable
+        vim.fn.system("ghostty +config background-image=" .. image_path)
+        vim.fn.system("ghostty +config background-image-opacity=0.25")
+        clear_bg()
+    end,
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+        -- Reset Ghostty back to your standard clean shell color when you exit Neovim
+        vim.fn.system("ghostty +config background-image=")
+    end,
+})
