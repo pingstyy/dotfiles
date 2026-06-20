@@ -1,0 +1,78 @@
+===================================================================
+                 ULTIMATE NEOVIM FULL-SETUP CHEATSHEET
+==================================================================
+Leader Key: SPACE ( <leader> )
+
+--- [1] FILE EXPLORATION (OIL.NVIM) ---
+- ................... Open Oil (Edit folders like a text file)
+Enter ............... Open file or folder
+<C-h> ............... Toggle hidden files/folders
+<C-l> ............... Refresh folder view
+
+--- [1B] YAZI FILE MANAGER ---
+n . ................. From your shell alias: open Neovim on current dir; Yazi opens automatically
+y ................... Toggle / resume Yazi inside Neovim
+:Yazi ............... Open Yazi at the current file
+:Yazi cwd ........... Open Yazi at Neovim's working directory
+
+--- [2] SEARCH & PICKERS (TELESCOPE) ---
+<leader> f f ........ Find Files (Search by filename)
+<C-p> ............... Git Files (Search files in current repo)
+<leader> f g ........ Live Grep (Search words inside files)
+<leader> f b ........ Buffers (Search open files)
+<leader> f h ........ Help Tags (Search Neovim docs)
+
+--- [3] HARPOON (FAVORITE FILES) ---
+<leader> a .......... Add current file to Harpoon list
+<C-e> ............... Toggle Harpoon Quick Menu
+<C-h> ............... Jump to Harpoon File 1
+<C-t> ............... Jump to Harpoon File 2
+<C-n> ............... Jump to Harpoon File 3
+<C-s> ............... Jump to Harpoon File 4
+
+--- [4] CODE INTELLIGENCE (LSP & BLINK.CMP) ---
+g d ................. Go to Definition
+K ................... Hover Documentation
+<leader> vca ........ Code Actions (Fixes / Refactors)
+<leader> vrn ........ Rename variable (Everywhere in project)
+<leader> vrr ........ Show References (Where is this used?)
+<leader> vd ......... Open Diagnostic (Show error details)
+<Tab> ............... (Blink) Accept autocomplete suggestion
+<C-n/p> ............. (Blink) Scroll through suggestions
+
+--- [5] EDITING & CLIPBOARD ---
+J (Visual) .......... Move selected block DOWN
+K (Visual) .......... Move selected block UP
+<leader> c .......... Copy to System Clipboard (Yank)
+<leader> p (Visual) . Paste over selection (Keeps your copy)
+<leader> d .......... Delete forever (Black Hole - No Cut)
+:CopyAbsPath ........ Copy current file absolute path
+:CopyRelPath ........ Copy current file path relative to cwd
+:CopyCwd ............ Copy current Neovim working directory
+Autoformat .......... Happens automatically on File Save
+
+--- [6] MOVEMENT & VIEW ---
+<C-d> ............... Jump DOWN half-page (Cursor centered)
+<C-u> ............... Jump UP half-page (Cursor centered)
+n ................... Next search result (Centered)
+N ................... Previous search result (Centered)
+
+--- [7] WINDOWS, TERMINAL & QUICKFIX ---
+<C-h> ............... Move to Left Window
+<C-j> ............... Move to Down Window
+<C-k> ............... Move to Up Window
+<C-l> ............... Move to Right Window
+<C-\> ............... Toggle Floating Terminal (default ToggleTerm behavior)
+<leader> t t ........ Toggle Floating Terminal in current file directory
+<Esc> ............... Exit Terminal Mode (Back to Vim keys)
+<leader> c o ........ Open Quickfix list
+<leader> c n ........ Next Quickfix item
+<leader> c p ........ Previous Quickfix item
+:cdo ................ Run command on all items in Quickfix
+
+--- [8] GIT & HISTORY ---
+<leader> g s ........ Git Status (Fugitive)
+<leader> u .......... Toggle UndoTree (Visual History)
+Right Click ......... Open Mouse Context Menu
+
+==================================================================

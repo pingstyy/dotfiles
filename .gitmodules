@@ -1,0 +1,3 @@
+[submodule "rndr.nvim"]
+	path = rndr.nvim
+	url = ./rndr.nvim
