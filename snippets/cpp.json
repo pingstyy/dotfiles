@@ -1,0 +1,21 @@
+{
+  "main": {
+    "prefix": "main",
+    "description": "C++ main",
+    "body": [
+      "int main() {",
+      "    ${0}",
+      "    return 0;",
+      "}"
+    ]
+  },
+  "for index": {
+    "prefix": "fori",
+    "description": "Indexed for loop",
+    "body": [
+      "for (${1:int} ${2:i} = 0; ${2:i} < ${3:n}; ++${2:i}) {",
+      "    ${0}",
+      "}"
+    ]
+  }
+}

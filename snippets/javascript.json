@@ -1,0 +1,24 @@
+{
+  "react arrow function component": {
+    "prefix": "rafc",
+    "description": "React arrow function component",
+    "body": [
+      "const ${1:${TM_FILENAME_BASE}} = (${2:props}) => {",
+      "  return (",
+      "    <${3:div}>${0}</${3:div}>",
+      "  );",
+      "};",
+      "",
+      "export default ${1:${TM_FILENAME_BASE}};"
+    ]
+  },
+  "arrow function": {
+    "prefix": "afn",
+    "description": "Arrow function",
+    "body": [
+      "const ${1:name} = (${2:args}) => {",
+      "  ${0}",
+      "};"
+    ]
+  }
+}

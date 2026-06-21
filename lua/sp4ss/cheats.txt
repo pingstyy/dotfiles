@@ -1,78 +1,93 @@
-===================================================================
-                 ULTIMATE NEOVIM FULL-SETUP CHEATSHEET
-==================================================================
-Leader Key: SPACE ( <leader> )
+SP4SS NEOVIM CHEATSHEET
+Leader: Space
 
---- [1] FILE EXPLORATION (OIL.NVIM) ---
-- ................... Open Oil (Edit folders like a text file)
-Enter ............... Open file or folder
-<C-h> ............... Toggle hidden files/folders
-<C-l> ............... Refresh folder view
+DASHBOARD
+n                  shell: open Neovim dashboard
+c                  dashboard: open config picker
+n                  dashboard: new buffer
+q                  dashboard: quit
+:Cheat / :cheat    open this file
 
---- [1B] YAZI FILE MANAGER ---
-n . ................. From your shell alias: open Neovim on current dir; Yazi opens automatically
-y ................... Toggle / resume Yazi inside Neovim
-:Yazi ............... Open Yazi at the current file
-:Yazi cwd ........... Open Yazi at Neovim's working directory
+COMPLETION / SNIPPETS
+Tab                next completion / next snippet placeholder
+Shift-Tab          previous completion / previous snippet placeholder
+Enter              accept selected completion
+Option-Enter       accept completion and insert newline
+Option-Space       show completion + docs
+Option-1..5        accept completion item 1..5 directly
+Option-j/k         scroll completion docs
+:SnippetEdit       edit snippets for current filetype
+:SnippetEdit lua   edit snippets for a filetype
+:SnippetPackage    edit snippets/package.json
+:SnippetCheck rafc check if custom snippet prefix exists
+Snippet files      ~/.config/nvim/snippets/*.json
 
---- [2] SEARCH & PICKERS (TELESCOPE) ---
-<leader> f f ........ Find Files (Search by filename)
-<C-p> ............... Git Files (Search files in current repo)
-<leader> f g ........ Live Grep (Search words inside files)
-<leader> f b ........ Buffers (Search open files)
-<leader> f h ........ Help Tags (Search Neovim docs)
+PICKERS / SEARCH
+Space Space        smart file picker
+Space f f          find files
+Space f c          config files
+Space f g          git files
+Space f r          recent files
+Space /            grep project
+Space s r          registers picker
+Space s c          command history
+Space s k          keymaps
+Space s q          quickfix picker
+Space ?            open cheatsheet
 
---- [3] HARPOON (FAVORITE FILES) ---
-<leader> a .......... Add current file to Harpoon list
-<C-e> ............... Toggle Harpoon Quick Menu
-<C-h> ............... Jump to Harpoon File 1
-<C-t> ............... Jump to Harpoon File 2
-<C-n> ............... Jump to Harpoon File 3
-<C-s> ............... Jump to Harpoon File 4
+PATHS / REGISTERS
+"%p                paste current relative file path in normal mode
+Ctrl-r %           paste current relative file path in insert mode
+:let @+ = @%       copy relative path register to system clipboard
+:let @+ = expand('%:p') copy absolute path to system clipboard
+Space y p          copy absolute file path
+Space y r          copy relative file path
+Space y c          copy cwd
+:Registers         registers picker
 
---- [4] CODE INTELLIGENCE (LSP & BLINK.CMP) ---
-g d ................. Go to Definition
-K ................... Hover Documentation
-<leader> vca ........ Code Actions (Fixes / Refactors)
-<leader> vrn ........ Rename variable (Everywhere in project)
-<leader> vrr ........ Show References (Where is this used?)
-<leader> vd ......... Open Diagnostic (Show error details)
-<Tab> ............... (Blink) Accept autocomplete suggestion
-<C-n/p> ............. (Blink) Scroll through suggestions
+EDITING
+Space w            save
+Space w q          save all and quit
+Space u u          safe save-all quit
+Space r q          safe quit all
+Visual J/K         move selected lines down/up
+Space c            yank to system clipboard
+Visual Space p     paste over selection without replacing yank
+Visual Space f     format selected range
 
---- [5] EDITING & CLIPBOARD ---
-J (Visual) .......... Move selected block DOWN
-K (Visual) .......... Move selected block UP
-<leader> c .......... Copy to System Clipboard (Yank)
-<leader> p (Visual) . Paste over selection (Keeps your copy)
-<leader> d .......... Delete forever (Black Hole - No Cut)
-:CopyAbsPath ........ Copy current file absolute path
-:CopyRelPath ........ Copy current file path relative to cwd
-:CopyCwd ............ Copy current Neovim working directory
-Autoformat .......... Happens automatically on File Save
+LSP
+g d                definition
+K                  hover
+Space v c a        code action
+Space v r n        rename
+Space v r r        references
+Space v d          diagnostic popup
 
---- [6] MOVEMENT & VIEW ---
-<C-d> ............... Jump DOWN half-page (Cursor centered)
-<C-u> ............... Jump UP half-page (Cursor centered)
-n ................... Next search result (Centered)
-N ................... Previous search result (Centered)
+FILES / NAVIGATION
+Space e            explorer
+Space h a          add file to Harpoon
+Space h e          Harpoon menu
+Space 1..4         Harpoon file 1..4
+Ctrl-p             git files
+Ctrl-h/j/k/l       move windows
+Ctrl-d/u           half-page down/up, centered
+n / N              next/prev search result, centered
 
---- [7] WINDOWS, TERMINAL & QUICKFIX ---
-<C-h> ............... Move to Left Window
-<C-j> ............... Move to Down Window
-<C-k> ............... Move to Up Window
-<C-l> ............... Move to Right Window
-<C-\> ............... Toggle Floating Terminal (default ToggleTerm behavior)
-<leader> t t ........ Toggle Floating Terminal in current file directory
-<Esc> ............... Exit Terminal Mode (Back to Vim keys)
-<leader> c o ........ Open Quickfix list
-<leader> c n ........ Next Quickfix item
-<leader> c p ........ Previous Quickfix item
-:cdo ................ Run command on all items in Quickfix
+TERMINAL / QUICKFIX / GIT
+Space t t          terminal in current file dir
+Esc                leave terminal mode
+Space c o          quickfix open
+Space c n/p        quickfix next/prev
+Space g s          git status
+Space g g          lazygit
+Space u            undo tree
 
---- [8] GIT & HISTORY ---
-<leader> g s ........ Git Status (Fugitive)
-<leader> u .......... Toggle UndoTree (Visual History)
-Right Click ......... Open Mouse Context Menu
-
-==================================================================
+SHELL SHORTCUTS IN ~/.sp4ss
+n                  open Neovim dashboard
+nc                 open Neovim config
+cheat              open this cheatsheet in Neovim
+y                  Yazi, cd to final directory on quit
+cdn                cd ~/.config/nvim
+cdw                cd ~/ws
+cd ls              list directory stack
+cd ls 2            jump to directory stack item 2

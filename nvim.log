@@ -2,3 +2,5 @@ WRN 2026-06-20T13:37:01.857 ?.25194    server_start:197: Failed to start server:
 WRN 2026-06-20T13:37:12.221 ?.25825    server_start:197: Failed to start server: operation not permitted: /var/folders/nk/c62wvydd59s697_82mfh23rh0000gn/T/nvim.spass/nOFMpI/nvim.25825.0
 WRN 2026-06-20T13:43:04.932 ?.28809    server_start:197: Failed to start server: operation not permitted: /var/folders/nk/c62wvydd59s697_82mfh23rh0000gn/T/nvim.spass/26WpI1/nvim.28809.0
 WRN 2026-06-20T13:44:22.955 ?.30768    server_start:197: Failed to start server: operation not permitted: /var/folders/nk/c62wvydd59s697_82mfh23rh0000gn/T/nvim.spass/w2apyf/nvim.30768.0
+WRN 2026-06-21T19:46:24.636 ?.83875    server_start:197: Failed to start server: operation not permitted: /var/folders/nk/c62wvydd59s697_82mfh23rh0000gn/T/nvim.spass/YUQVuw/nvim.83875.0
+WRN 2026-06-21T19:46:24.666 ?.83876    server_start:197: Failed to start server: operation not permitted: /var/folders/nk/c62wvydd59s697_82mfh23rh0000gn/T/nvim.spass/RMJzPj/nvim.83876.0

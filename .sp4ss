@@ -1,0 +1,91 @@
+# Personal shell shortcuts for Ghostty + Zsh.
+# This file is sourced by ~/.zshrc.
+
+# Keep terminal tabs from instantly sharing history with each other.
+unsetopt share_history
+setopt append_history
+setopt inc_append_history
+
+# Prevent Ctrl-s from freezing the terminal.
+stty -ixon 2>/dev/null
+
+# Completion menu: Tab opens/selects, Enter accepts.
+autoload -Uz compinit
+zmodload zsh/complist 2>/dev/null
+zstyle ':completion:*' menu select
+bindkey -e
+bindkey -M menuselect '^M' accept-line
+
+# Option/Meta word movement in Ghostty/macOS.
+bindkey '^[b' backward-word
+bindkey '^[f' forward-word
+bindkey '^[^?' backward-kill-word
+
+# Neovim entry points.
+n() {
+  if [[ $# -eq 0 ]]; then
+    nvim
+  else
+    nvim "$@"
+  fi
+}
+
+alias nc='nvim ~/.config/nvim'
+alias cdn='cd ~/.config/nvim'
+alias cdw='cd ~/ws'
+
+cheat() {
+  nvim '+Cheat'
+}
+
+# Yazi: stay in the directory you navigated to after quitting.
+y() {
+  local tmp cwd
+  tmp="$(mktemp -t 'yazi-cwd.XXXXXX')" || return
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(cat -- "$tmp" 2>/dev/null)" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# Directory stack: cd ls, cd ls 2.
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_silent
+
+cd() {
+  if [[ "$1" == "ls" ]]; then
+    if [[ -n "$2" ]]; then
+      builtin cd "~$2"
+    else
+      dirs -v
+    fi
+  else
+    builtin cd "$@"
+  fi
+}
+
+# Git.
+alias gs='git status'
+alias ga='git add'
+alias gc='git clone'
+alias gm='git commit -m'
+alias gp='git push'
+alias gpl='git pull'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gbr='git branch'
+alias gd='git diff'
+alias gl='git log --oneline --graph --all'
+alias grs='git restore --staged'
+
+# Tmux.
+alias ta='tmux attach -t'
+alias tn='tmux new -s'
+alias tl='tmux ls'
+alias tk='tmux kill-session -t'
+
+sp4ss-reload() {
+  source "$HOME/.sp4ss"
+}

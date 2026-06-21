@@ -30,6 +30,29 @@ vim.api.nvim_create_user_command("CopyCwd", function()
     copy_to_clipboard(vim.fn.getcwd(), "Copied working directory")
 end, {})
 
+vim.api.nvim_create_user_command("Cheat", function()
+    vim.cmd.edit(vim.fn.fnameescape(vim.fn.stdpath("config") .. "/lua/sp4ss/cheats.txt"))
+end, {})
+
+vim.api.nvim_create_user_command("Registers", function()
+    require("telescope.builtin").registers()
+end, {})
+
+vim.api.nvim_create_user_command("SnippetEdit", function(opts)
+    require("sp4ss.snippets").edit(opts.args)
+end, { nargs = "?" })
+
+vim.api.nvim_create_user_command("SnippetPackage", function()
+    require("sp4ss.snippets").package()
+end, {})
+
+vim.api.nvim_create_user_command("SnippetCheck", function(opts)
+    require("sp4ss.snippets").check(opts.args)
+end, { nargs = "?" })
+
+vim.cmd([[cnoreabbrev <expr> cheat getcmdtype() == ':' && getcmdline() ==# 'cheat' ? 'Cheat' : 'cheat']])
+vim.cmd([[cnoreabbrev <expr> registers getcmdtype() == ':' && getcmdline() ==# 'registers' ? 'Registers' : 'registers']])
+
 local function toggleterm_current_dir()
     vim.cmd("ToggleTerm dir=" .. vim.fn.fnameescape(current_dir()))
 end
@@ -100,6 +123,12 @@ vim.keymap.set("n", "<leader>c", [["+Y]])
 -- Paste without losing the current register
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
+vim.keymap.set("n", "<leader>yp", "<cmd>CopyAbsPath<CR>", { desc = "Copy absolute file path" })
+vim.keymap.set("n", "<leader>yr", "<cmd>CopyRelPath<CR>", { desc = "Copy relative file path" })
+vim.keymap.set("n", "<leader>yc", "<cmd>CopyCwd<CR>", { desc = "Copy cwd" })
+vim.keymap.set("n", "<leader>?", "<cmd>Cheat<CR>", { desc = "Open cheatsheet" })
+vim.keymap.set("n", "<leader>xe", "<cmd>SnippetEdit<CR>", { desc = "Edit snippets for filetype" })
+vim.keymap.set("n", "<leader>xE", "<cmd>SnippetPackage<CR>", { desc = "Edit snippet package" })
 
 
 -- Telescope Remaps
@@ -108,6 +137,7 @@ vim.keymap.set('n', '<leader>ff', function() require('telescope.builtin').find_f
 vim.keymap.set('n', '<leader>fg', function() require('telescope.builtin').live_grep() end)
 vim.keymap.set('n', '<leader>fb', function() require('telescope.builtin').buffers() end)
 vim.keymap.set('n', '<leader>fh', function() require('telescope.builtin').help_tags() end)
+vim.keymap.set('n', '<leader>sr', function() require('telescope.builtin').registers() end, { desc = "Registers" })
 
 -- Project Remaps (Primeagen style)
 vim.keymap.set('n', '<leader>pf', function() require('telescope.builtin').find_files() end)
@@ -146,6 +176,9 @@ vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end)
 vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end)
 vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end)
 vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end)
+vim.keymap.set("v", "<leader>f", function()
+    vim.lsp.buf.format({ range = true })
+end, { desc = "Format selection" })
 
 
 -- TreeSitter
