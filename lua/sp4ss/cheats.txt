@@ -14,13 +14,25 @@ Shift-Tab          previous completion / previous snippet placeholder
 Enter              accept selected completion
 Option-Enter       accept completion and insert newline
 Option-Space       show completion + docs
-Option-1..5        accept completion item 1..5 directly
+Cmd-1..9           accept dropdown item 1..9 (GUI / Neovide)
+Option-1..9        accept dropdown item 1..9 (terminal-friendly fallback)
 Option-j/k         scroll completion docs
+Fuzzy match        case-insensitive; skips typos
+                   "selfatn" -> "Self_attention_score"
+                   "self-attention-xxx" -> "Self_Attention_Xxx"
+                   "_" and "-" treated interchangeably when matching
 :SnippetEdit       edit snippets for current filetype
 :SnippetEdit lua   edit snippets for a filetype
 :SnippetPackage    edit snippets/package.json
 :SnippetCheck rafc check if custom snippet prefix exists
 Snippet files      ~/.config/nvim/snippets/*.json
+
+COMMENTING (language-aware via commentstring)
+Ctrl-/             toggle comment line / visual selection (terminal)
+Ctrl-_             same (many Mac terminals send C-/ as C-_)
+Cmd-/              toggle comment (GUI only; terminal often swallows Cmd)
+Visual + above     comment/uncomment all selected lines
+Note               uses Neovim built-in gc/gcc (// # -- etc by filetype)
 
 PICKERS / SEARCH
 Space Space        smart file picker
@@ -47,6 +59,7 @@ Space y c          copy cwd
 
 EDITING
 Space w            save
+Space w e          save then open/focus file explorer
 Space w q          save all and quit
 Space u u          safe save-all quit
 Space r q          safe quit all
@@ -63,8 +76,24 @@ Space v r n        rename
 Space v r r        references
 Space v d          diagnostic popup
 
-FILES / NAVIGATION
-Space e            explorer
+FILES / EXPLORER (Snacks sidebar; netrw disabled)
+Space e            smart explorer:
+                     closed  -> open
+                     open elsewhere -> focus (tree stays expanded)
+                     focused -> close
+Enter / l          open file in last focused editor pane
+h                  close directory node
+BS                 up one directory
+Ctrl-v             open selected file in vertical split
+Ctrl-s             open selected file in horizontal split
+a / r / d          add / rename / delete
+y / p              yank path / paste
+H / I              toggle hidden / gitignored
+-                  Oil: open parent directory of current file
+Tip                <C-w>v duplicates current buffer (normal Vim).
+                   Prefer Ctrl-v / Ctrl-s from explorer for a different file.
+
+NAVIGATION
 Space h a          add file to Harpoon
 Space h e          Harpoon menu
 Space 1..4         Harpoon file 1..4
@@ -91,3 +120,7 @@ cdn                cd ~/.config/nvim
 cdw                cd ~/ws
 cd ls              list directory stack
 cd ls 2            jump to directory stack item 2
+
+MAC KEY NOTES
+Cmd often never reaches terminal Neovim (Terminal.app / iTerm swallow it).
+Prefer Option-1..9 and Ctrl-/ in the terminal; Cmd-* works in GUI clients.

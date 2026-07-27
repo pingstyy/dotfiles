@@ -3,30 +3,37 @@ return {
   dependencies = 'rafamadriz/friendly-snippets',
   version = '*',
   opts = {
-    keymap = {
-      preset = 'none', -- Disables standard presets so we can optimize around your hand posture
+    keymap = (function()
+      local keymap = {
+        preset = 'none', -- Disables standard presets so we can optimize around your hand posture
 
-      -- Popup/snippet flow: reachable on Mac without stretching to left Control.
-      ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
-      ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
+        -- Popup/snippet flow: reachable on Mac without stretching to left Control.
+        ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
 
-      -- Confirm the selected completion. If the menu is closed, Enter stays normal.
-      ['<CR>'] = { 'select_and_accept', 'fallback' },
-      ['<M-CR>'] = { 'accept_and_enter', 'fallback' },
-      ['<M-Space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+        -- Confirm the selected completion. If the menu is closed, Enter stays normal.
+        ['<CR>'] = { 'select_and_accept', 'fallback' },
+        ['<M-CR>'] = { 'accept_and_enter', 'fallback' },
+        ['<M-Space>'] = { 'show', 'show_documentation', 'hide_documentation' },
 
-      -- Directly accept suggestion 1-5 with Option+number.
-      ['<M-1>'] = { function(cmp) cmp.accept({ index = 1 }) end },
-      ['<M-2>'] = { function(cmp) cmp.accept({ index = 2 }) end },
-      ['<M-3>'] = { function(cmp) cmp.accept({ index = 3 }) end },
-      ['<M-4>'] = { function(cmp) cmp.accept({ index = 4 }) end },
-      ['<M-5>'] = { function(cmp) cmp.accept({ index = 5 }) end },
+        -- Thumb-driven doc scrolling.
+        ['<M-j>'] = { 'scroll_documentation_down', 'fallback' },
+        ['<M-k>'] = { 'scroll_documentation_up', 'fallback' },
+      }
 
-      -- Thumb-driven doc scrolling.
-      ['<M-j>'] = { 'scroll_documentation_down', 'fallback' },
-      ['<M-k>'] = { 'scroll_documentation_up', 'fallback' },
-    },
-    -- Case-insensitive fuzzy: e.g. "selfatn" -> "Self_attention_score"
+      -- Accept nth dropdown item (1-based index).
+      -- Cmd+N works in GUI (Neovide); Option+N is the reliable terminal fallback.
+      for i = 1, 9 do
+        local accept_nth = function(cmp)
+          cmp.accept({ index = i })
+        end
+        keymap[string.format('<D-%d>', i)] = { accept_nth }
+        keymap[string.format('<M-%d>', i)] = { accept_nth }
+      end
+
+      return keymap
+    end)(),
+    -- Case-insensitive fuzzy: "selfatn" / "self-attention" -> "Self_Attention_Xxx"
     -- Typo resistance / snake_case scoring need the Rust matcher.
     fuzzy = {
       implementation = 'prefer_rust_with_warning',
@@ -62,6 +69,18 @@ return {
     },
     sources = {
       default = { 'lsp', 'path', 'snippets', 'buffer' },
+      -- Treat _ and - as interchangeable for matching so typing
+      -- "self-attention-xxx" can rank "Self_Attention_Xxx".
+      transform_items = function(_, items)
+        for _, item in ipairs(items) do
+          local text = item.filterText or item.label
+          if type(text) == 'string' and text:find('_', 1, true) then
+            -- Match needle with hyphens against symbols that use underscores.
+            item.filterText = text:gsub('_', '-')
+          end
+        end
+        return items
+      end,
       providers = {
         snippets = {
           opts = {
