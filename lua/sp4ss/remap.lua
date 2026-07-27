@@ -1,6 +1,6 @@
 vim.g.mapleader = " "
 
-vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+-- File explorer is Snacks (<leader>e in snacks.lua). Do not map Ex/netrw here.
 
 local function current_dir()
     local file_dir = vim.fn.expand("%:p:h")
@@ -106,7 +106,23 @@ vim.keymap.set("n", "<leader>wq", function() safe_quit_all(true) end)
 vim.keymap.set("n", "<leader>uu", function() safe_quit_all(true) end)
 vim.keymap.set("n", "<leader>rq", function() safe_quit_all(false) end)
 vim.keymap.set("n", "<leader>qa", function() safe_quit_all(false) end)
-vim.keymap.set("n", "<leader>we", ":w | Ex<CR> ")
+vim.keymap.set("n", "<leader>we", function()
+    vim.cmd.w()
+    local explorer = Snacks.picker.get({ source = "explorer" })[1]
+    if explorer then
+        explorer:focus()
+    else
+        Snacks.explorer()
+    end
+end, { desc = "Write and open file explorer" })
+
+-- Comment toggle: Ctrl+/ works in most Mac terminals (often sent as <C-_>).
+-- Cmd+/ (<D-/>) only reaches Neovim in GUI clients (e.g. Neovide).
+-- Uses built-in gc/gcc (commentstring / filetype-aware).
+for _, key in ipairs({ "<C-/>", "<C-_>", "<D-/>" }) do
+    vim.keymap.set("n", key, "gcc", { remap = true, desc = "Toggle comment line" })
+    vim.keymap.set("x", key, "gc", { remap = true, desc = "Toggle comment selection" })
+end
 
 -- Move selected lines up and down in Visual Mode
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")

@@ -1,5 +1,6 @@
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
+-- Prefer Snacks explorer / Oil over netrw (avoids Ex replacing buffers & split weirdness)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 
 

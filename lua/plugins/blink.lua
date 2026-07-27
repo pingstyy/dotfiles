@@ -26,6 +26,16 @@ return {
       ['<M-j>'] = { 'scroll_documentation_down', 'fallback' },
       ['<M-k>'] = { 'scroll_documentation_up', 'fallback' },
     },
+    -- Case-insensitive fuzzy: e.g. "selfatn" -> "Self_attention_score"
+    -- Typo resistance / snake_case scoring need the Rust matcher.
+    fuzzy = {
+      implementation = 'prefer_rust_with_warning',
+      max_typos = function(keyword)
+        return math.floor(#keyword / 3)
+      end,
+      use_proximity = true,
+      sorts = { 'score', 'sort_text' },
+    },
     completion = {
       documentation = {
         auto_show = true,

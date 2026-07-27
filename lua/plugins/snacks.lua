@@ -71,14 +71,30 @@ return {
         },
 
 
-        explorer = { enabled = true },
+        explorer = {
+            enabled = true,
+            replace_netrw = true,
+        },
         indent = { enabled = true },
         input = { enabled = true },
         notifier = {
             enabled = true,
             timeout = 3000,
         },
-        picker = { enabled = true },
+        picker = {
+            enabled = true,
+            sources = {
+                explorer = {
+                    -- Keep tree open after opening a file.
+                    auto_close = false,
+                    jump = { close = false, reuse_win = false },
+                    -- Open into last focused editor window (so splits get different files).
+                    follow_file = true,
+                    layout = { preset = "sidebar", preview = false },
+                    -- From explorer: <C-v> vsplit, <C-s> split selected file (not current buffer).
+                },
+            },
+        },
         quickfile = { enabled = true },
         scope = { enabled = true },
         scroll = { enabled = true },
@@ -97,7 +113,24 @@ return {
         { "<leader>/",       function() Snacks.picker.grep() end,                                    desc = "Grep" },
         { "<leader>:",       function() Snacks.picker.command_history() end,                         desc = "Command History" },
         { "<leader>n",       function() Snacks.picker.notifications() end,                           desc = "Notification History" },
-        { "<leader>e",       function() Snacks.explorer() end,                                       desc = "File Explorer" },
+        -- Smart explorer: open if closed, focus if open elsewhere, close only if already focused.
+        -- Default Snacks.explorer() toggles closed every second press, which feels like collapse.
+        {
+            "<leader>e",
+            function()
+                local explorer = Snacks.picker.get({ source = "explorer" })[1]
+                if not explorer then
+                    Snacks.explorer()
+                    return
+                end
+                if explorer:is_focused() then
+                    explorer:close()
+                else
+                    explorer:focus()
+                end
+            end,
+            desc = "File Explorer",
+        },
         -- find
         { "<leader>fb",      function() Snacks.picker.buffers() end,                                 desc = "Buffers" },
         { "<leader>fc",      function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
