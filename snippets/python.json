@@ -10,5 +10,172 @@
       "if __name__ == \"__main__\":",
       "    main()"
     ]
+  },
+  "__init__": {
+    "prefix": ["init", "__init"],
+    "description": "Clean __init__",
+    "body": [
+      "def __init__(self${1:}):",
+      "    ${0:pass}"
+    ]
+  },
+  "__call__": {
+    "prefix": ["call", "__call"],
+    "description": "Clean __call__",
+    "body": [
+      "def __call__(self${1:}):",
+      "    ${0:}"
+    ]
+  },
+  "__len__": {
+    "prefix": ["len", "__len"],
+    "description": "Clean __len__",
+    "body": [
+      "def __len__(self):",
+      "    ${0:return 0}"
+    ]
+  },
+  "__repr__": {
+    "prefix": ["repr", "__repr"],
+    "description": "Clean __repr__",
+    "body": [
+      "def __repr__(self):",
+      "    ${0:return f\"{self.__class__.__name__}()\"}"
+    ]
+  },
+  "__str__": {
+    "prefix": ["str", "__str"],
+    "description": "Clean __str__",
+    "body": [
+      "def __str__(self):",
+      "    ${0:return repr(self)}"
+    ]
+  },
+  "__new__": {
+    "prefix": ["new", "__new"],
+    "description": "Clean __new__",
+    "body": [
+      "def __new__(cls${1:}):",
+      "    ${0:return super().__new__(cls)}"
+    ]
+  },
+  "__post_init__": {
+    "prefix": ["postinit", "__post_init"],
+    "description": "Clean dataclass __post_init__",
+    "body": [
+      "def __post_init__(self):",
+      "    ${0:pass}"
+    ]
+  },
+  "__enter__": {
+    "prefix": ["enter", "__enter"],
+    "description": "Clean __enter__",
+    "body": [
+      "def __enter__(self):",
+      "    ${0:return self}"
+    ]
+  },
+  "__exit__": {
+    "prefix": ["exit", "__exit"],
+    "description": "Clean __exit__",
+    "body": [
+      "def __exit__(self, exc_type, exc, tb):",
+      "    ${0:return False}"
+    ]
+  },
+  "__iter__": {
+    "prefix": ["iter", "__iter"],
+    "description": "Clean __iter__",
+    "body": [
+      "def __iter__(self):",
+      "    ${0:return iter(self)}"
+    ]
+  },
+  "__next__": {
+    "prefix": ["next", "__next"],
+    "description": "Clean __next__",
+    "body": [
+      "def __next__(self):",
+      "    ${0:raise StopIteration}"
+    ]
+  },
+  "__getitem__": {
+    "prefix": ["getitem", "__getitem"],
+    "description": "Clean __getitem__",
+    "body": [
+      "def __getitem__(self, key):",
+      "    ${0:pass}"
+    ]
+  },
+  "__setitem__": {
+    "prefix": ["setitem", "__setitem"],
+    "description": "Clean __setitem__",
+    "body": [
+      "def __setitem__(self, key, value):",
+      "    ${0:pass}"
+    ]
+  },
+  "__delitem__": {
+    "prefix": ["delitem", "__delitem"],
+    "description": "Clean __delitem__",
+    "body": [
+      "def __delitem__(self, key):",
+      "    ${0:pass}"
+    ]
+  },
+  "__contains__": {
+    "prefix": ["contains", "__contains"],
+    "description": "Clean __contains__",
+    "body": [
+      "def __contains__(self, item):",
+      "    ${0:return False}"
+    ]
+  },
+  "__eq__": {
+    "prefix": ["eq", "__eq"],
+    "description": "Clean __eq__",
+    "body": [
+      "def __eq__(self, other):",
+      "    ${0:return NotImplemented}"
+    ]
+  },
+  "__hash__": {
+    "prefix": ["hash", "__hash"],
+    "description": "Clean __hash__",
+    "body": [
+      "def __hash__(self):",
+      "    ${0:return hash(self)}"
+    ]
+  },
+  "__slots__": {
+    "prefix": ["slots", "__slots"],
+    "description": "Clean __slots__",
+    "body": [
+      "__slots__ = (${1:})"
+    ]
+  },
+  "method": {
+    "prefix": "defs",
+    "description": "Clean instance method",
+    "body": [
+      "def ${1:name}(self${2:}):",
+      "    ${0:pass}"
+    ]
+  },
+  "function": {
+    "prefix": "def",
+    "description": "Clean function",
+    "body": [
+      "def ${1:name}(${2:}):",
+      "    ${0:pass}"
+    ]
+  },
+  "class": {
+    "prefix": "cls",
+    "description": "Empty class shell",
+    "body": [
+      "class ${1:Name}:",
+      "    ${0:pass}"
+    ]
   }
 }

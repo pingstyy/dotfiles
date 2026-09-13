@@ -7,24 +7,45 @@ c                  dashboard: open config picker
 n                  dashboard: new buffer
 q                  dashboard: quit
 :Cheat / :cheat    open this file
+Space ?            open this file.  q  (or Ctrl-o) = go back to previous file
 
 COMPLETION / SNIPPETS
 Tab                next completion / next snippet placeholder
 Shift-Tab          previous completion / previous snippet placeholder
-Enter              accept selected completion
-Option-Enter       accept completion and insert newline
-Option-Space       show completion + docs
-Cmd-1..9           accept dropdown item 1..9 (GUI / Neovide)
-Option-1..9        accept dropdown item 1..9 (terminal-friendly fallback)
+Enter              accept selected completion (when menu open)
+Cmd/Opt/Ctrl-Enter new line BELOW with indent, stay INSERT (ignore menu)
+Cmd/Opt/Ctrl-S-Enter new line ABOVE with indent, stay INSERT
+Option-Space       show completion + docs (also Ctrl-Space)
+Cmd-1..9 / Cmd-0   jump to open file tab 1..10 (tiny banner)
+Option-1..9        accept dropdown item N (menu shows 1..9)
 Option-j/k         scroll completion docs
-Fuzzy match        case-insensitive; skips typos
-                   "selfatn" -> "Self_attention_score"
-                   "self-attention-xxx" -> "Self_Attention_Xxx"
-                   "_" and "-" treated interchangeably when matching
+Menu               numbered rows + source name (LSP / Buffer / Case / …)
+Sources            snippets (boosted) > lsp > case > buffer > path
+Snippets           personal only (friendly-snippets OFF)
+LIVE COMPLETION (no Esc — pops while you type)
+  Case (any filetype): 2+ letter word → snake / kebab / camel / Pascal / …
+    examples: foo_bar  foo-bar  fooBar  myname
+  Class (.py only): 3+ letter word → always offers 4 scaffolds:
+    ◆ class + init + call
+    ◆ class + init
+    ◆ @dataclass
+    ◆ @dataclass + import
+  Menu max 15 rows; Option/Ctrl-Space forces show if hidden
+  Restart nvim after config changes
+Python dunders     init/call/len… (triggers: init, call, len, …)
+Case source        separator variants while typing multi-part names:
+                   foo-bar / foo_bar / foo--bar / Foo__Bar (any N words)
+                   also: foo__bar, Foo_Bar, Foo--Bar, Foo-Bar
+                   runs of -/_ collapse for splitting
+Fuzzy match        Rust matcher: case-insensitive; skips typos; _ ≈ -
+                   "selfatn" -> "Self_Attention_Score" (if in LSP/buffer)
+                   "self-attention" -> "Self_Attention_Score"
+                   Needs the symbol to already exist OR use Case variants
+If empty menu      Option/Ctrl-Space; check :LspInfo; type 2+ chars
 :SnippetEdit       edit snippets for current filetype
 :SnippetEdit lua   edit snippets for a filetype
 :SnippetPackage    edit snippets/package.json
-:SnippetCheck rafc check if custom snippet prefix exists
+:SnippetCheck init check if custom snippet prefix exists
 Snippet files      ~/.config/nvim/snippets/*.json
 
 COMMENTING (language-aware via commentstring)
@@ -45,7 +66,7 @@ Space s r          registers picker
 Space s c          command history
 Space s k          keymaps
 Space s q          quickfix picker
-Space ?            open cheatsheet
+Space ?            open cheatsheet (q or Ctrl-o = back)
 
 PATHS / REGISTERS
 "%p                paste current relative file path in normal mode
@@ -66,7 +87,103 @@ Space r q          safe quit all
 Visual J/K         move selected lines down/up
 Space c            yank to system clipboard
 Visual Space p     paste over selection without replacing yank
-Visual Space f     format selected range
+Visual Space f     format selected range only (save does NOT format whole file)
+Cursor on word     light-bg highlight all same tokens in file
+]] / [[           next / prev LSP reference (Snacks.words)
+vw / vW            select forward word; last token on line does NOT jump to next line
+viw                select whole word under cursor (always precise)
+
+VSCODE-LIKE LINE EDITS (Cmd needs GUI or iTerm key passthrough)
+Cmd/Opt/Ctrl-Enter new line below + autoindent, stay insert (never accept menu)
+Cmd/Opt/Ctrl-S-Enter new line above + autoindent, stay insert
+Enter              accept selected completion (when menu open)
+Cmd-Shift-K        delete current line (visual: delete selected lines)
+Option-Shift-j     duplicate line/selection below (cursor keeps column)
+Option-Shift-k     duplicate line/selection above (cursor keeps column)
+Cmd-]              indent line / selection
+Cmd-[              outdent line / selection
+Option-] / [       indent / outdent (terminal-friendly)
+
+LIBRARY / PACKAGE COMPLETIONS (all LSPs)
+Typing pkg.sub.xxx → API symbols from installed deps (not random buffer words).
+Needs correct project env/toolchain for that language:
+  Python   :PythonSelectEnv  or conda activate / .venv before nvim
+           :PythonShowEnv    show interpreter (pyright + runner)
+  Go/Rust/JS/… open project root (go.mod / Cargo.toml / package.json);
+               start nvim from a shell that has the right toolchain on PATH
+
+RUN (pane auto-closes on insert / search / visual / move / picker / other pane)
+Space r r          if this project has steps → run them in order (joined &&)
+                   else save + run current file (filetype default)
+                   focus STAYS in editor; first key/click in editor HIDES pane
+Space r l          re-run the exact last command string
+Space r t          toggle output pane (also auto-hides on next editor action)
+Space r e          edit sequential steps (one cmd per line). :w save
+Space r a          add one step (prompt). delete a line in Space r e to remove
+Space t t          free interactive shell (toggleterm, current file dir)
+Ctrl-\             toggle float terminal (interactive)
+Esc                leave terminal mode → normal mode
+Pipeline           per git-root (or cwd). # comments + blank lines skipped
+                   example:
+                     make build
+                     cd build
+                     ./filerun
+                     xprof ./fileout
+                   →  make build && cd build && ./filerun && xprof ./fileout
+                   fail in a step stops the rest (that's &&). use `;` in a line
+                   if that step must not abort the chain.
+                   empty file = Space r r falls back to current-file run
+Filetype cmds      python→conda/venv python; go→go run; rust→cargo run;
+                   js/ts→node/tsx; c/cpp→compile+run; sh→bash/zsh; …
+Python env         current conda/venv, else last pick (modal-env etc)
+                   :PythonSelectEnv  pick   :PythonShowEnv  show
+                   iron + runner + new tmux panes all use this env
+
+IRON REPL (ipython in current env; pane hides on editor activity)
+Space i i          toggle REPL (right split, ~30%)
+Space i R          restart REPL (picks env again)
+Space i h          hide   Space i F  focus
+Space i l / i p    send line / paragraph
+Space i c          send motion / visual selection
+Space i b          send # %% code block
+Space i f          send file
+Space i x / i q    interrupt / quit kernel
+Space i C          clear REPL
+
+FILE TABS (tiny top banner, max 10)
+How tabs fill:
+  start            last-used files (vim oldfiles) that still exist
+  open a file      auto-add (Space Space / explorer / :e / gf)
+  already in list  no shuffle (Cmd-N numbers stay put)
+  over 10          oldest non-current drops
+Cmd-1..9  Cmd-0    jump to file 1..10
+Cmd-Ctrl-h/l       prev/next tab (also Cmd-Ctrl-Left/Right)
+Cmd-w              drop from tabs + close buffer
+click tab          jump; middle-click close
+DIY                just open the file. that IS "add to tabs"
+
+MULTI-CURSOR (non-continuous lines)
+Option-Ctrl-j/k    add cursor on line below / above
+Cmd-Option-j/k     same (GUI)
+Option-Ctrl-Shift-j/k  skip a line while adding cursors
+Cmd-d / Option-d   add cursor on next match of word/selection
+Cmd-Shift-d        skip a match
+ga (n/x)           multi-cursor operator; visual: cursor on each selected line
+Visual I / A       insert/append on every selected line (multi)
+Ctrl-click         add/remove cursor with mouse
+Ctrl-q             toggle multi-cursors (main only / all)
+Esc                clear multi-cursors (when active)
+
+Ghostty / Mac NOTE (Cmd keys)
+Ghostty DEFAULTS steal keys before Neovim:
+  Cmd+Enter  = toggle_fullscreen   → unbound in ghostty config
+  Cmd+1..9/0 = goto_tab            → unbound (nvim file tabs)
+  Cmd+w      = close_surface       → unbound (nvim close file tab)
+Config: ~/Library/Application Support/com.mitchellh.ghostty/config
+Reload: Cmd+Shift+,  (or restart Ghostty)
+Fullscreen now: Cmd+Ctrl+F
+Option-as-Meta: macos-option-as-alt=left  → use LEFT Option for Opt+N
+If Cmd+N still does nothing:  ghostty +list-keybinds | rg 'super\+(enter|[1-9])'
 
 LSP
 g d                definition
@@ -82,6 +199,7 @@ Space e            smart explorer:
                      open elsewhere -> focus (tree stays expanded)
                      focused -> close
 Enter / l          open file in last focused editor pane
+j/k                move; file preview float on main editor (~90% size)
 h                  close directory node
 BS                 up one directory
 Ctrl-v             open selected file in vertical split
@@ -93,7 +211,7 @@ H / I              toggle hidden / gitignored
 Tip                <C-w>v duplicates current buffer (normal Vim).
                    Prefer Ctrl-v / Ctrl-s from explorer for a different file.
 
-NAVIGATION
+NAVIGATION -/ harpoon
 Space h a          add file to Harpoon
 Space h e          Harpoon menu
 Space 1..4         Harpoon file 1..4
@@ -103,7 +221,10 @@ Ctrl-d/u           half-page down/up, centered
 n / N              next/prev search result, centered
 
 TERMINAL / QUICKFIX / GIT
-Space t t          terminal in current file dir
+Space t t          interactive terminal in current file dir
+Ctrl-\             float terminal
+Space r r / r l / r t / r e / r a   run / last / pane / edit steps / add step
+Space i i / i l / i c               iron REPL / send line / send visual
 Esc                leave terminal mode
 Space c o          quickfix open
 Space c n/p        quickfix next/prev
@@ -123,4 +244,4 @@ cd ls 2            jump to directory stack item 2
 
 MAC KEY NOTES
 Cmd often never reaches terminal Neovim (Terminal.app / iTerm swallow it).
-Prefer Option-1..9 and Ctrl-/ in the terminal; Cmd-* works in GUI clients.
+Prefer Option-1..9 (completion) and Ctrl-/ in the terminal; Cmd-* needs Ghostty unbind.

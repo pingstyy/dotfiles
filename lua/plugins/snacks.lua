@@ -90,8 +90,21 @@ return {
                     jump = { close = false, reuse_win = false },
                     -- Open into last focused editor window (so splits get different files).
                     follow_file = true,
+                    -- No preview split in the nav. Hover float is on_change below.
                     layout = { preset = "sidebar", preview = false },
+                    on_change = function(picker, item)
+                        require("sp4ss.explorer_preview").show(picker, item)
+                    end,
+                    on_close = function()
+                        require("sp4ss.explorer_preview").hide()
+                    end,
+                    on_show = function(picker)
+                        picker.list.win:on("WinLeave", function()
+                            require("sp4ss.explorer_preview").hide()
+                        end)
+                    end,
                     -- From explorer: <C-v> vsplit, <C-s> split selected file (not current buffer).
+                    -- Enter / l / double-click stay stock "confirm" (toggle dir / open file).
                 },
             },
         },
@@ -99,7 +112,12 @@ return {
         scope = { enabled = true },
         scroll = { enabled = true },
         statuscolumn = { enabled = true },
-        words = { enabled = true },
+        -- LSP symbol references under cursor (pairs with Sp4ssCursorWord text matches).
+        words = {
+            enabled = true,
+            debounce = 100,
+            modes = { "n", "i", "c" },
+        },
         styles = {
             notification = {
                 -- wo = { wrap = true } -- Wrap notifications
@@ -243,12 +261,45 @@ return {
                     vim.print = _G.dd
                 end
 
+                -- Snacks statuscolumn prints digits as plain text, so CursorLineNr never
+                -- fires. Wrap the current line's number in that group (relnum == 0).
+                -- Function-repl (not string-repl): Lua gsub "%%#" in a string becomes "%#",
+                -- which then prints as literal "#LineNr#" in the gutter.
+                do
+                    local sc = require("snacks.statuscolumn")
+                    if not sc._sp4ss_nr_hl then
+                        sc._sp4ss_nr_hl = true
+                        local orig = sc._get
+                        function sc._get()
+                            local ret = orig()
+                            if type(ret) ~= "string" or ret == "" or vim.v.virtnum ~= 0 then
+                                return ret
+                            end
+                            local hl = vim.v.relnum == 0 and "CursorLineNr" or "LineNr"
+                            return (ret:gsub("%%=(%d+) ", function(n)
+                                return "%=" .. "%#" .. hl .. "#" .. n .. "%* "
+                            end, 1))
+                        end
+                    end
+                end
+
                 -- Create some toggle mappings
                 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
                 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
                 Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
                 Snacks.toggle.diagnostics():map("<leader>ud")
-                Snacks.toggle.line_number():map("<leader>ul")
+                -- Master switch. On → numbers only on focused pane (see config.lua).
+                Snacks.toggle.new({
+                    id = "line_number",
+                    name = "Line Numbers",
+                    get = function()
+                        return vim.g.sp4ss_line_numbers ~= false
+                    end,
+                    set = function(state)
+                        vim.g.sp4ss_line_numbers = state
+                        vim.api.nvim_exec_autocmds("User", { pattern = "Sp4ssLineNumbers" })
+                    end,
+                }):map("<leader>ul")
                 Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
                     :map("<leader>uc")
                 Snacks.toggle.treesitter():map("<leader>uT")

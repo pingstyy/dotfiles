@@ -31,7 +31,22 @@ vim.api.nvim_create_user_command("CopyCwd", function()
 end, {})
 
 vim.api.nvim_create_user_command("Cheat", function()
+    local prev = vim.api.nvim_get_current_buf()
     vim.cmd.edit(vim.fn.fnameescape(vim.fn.stdpath("config") .. "/lua/sp4ss/cheats.txt"))
+    vim.b.sp4ss_cheat_prev = prev
+    vim.keymap.set("n", "q", function()
+        local p = vim.b.sp4ss_cheat_prev
+        if p and vim.api.nvim_buf_is_valid(p) and p ~= vim.api.nvim_get_current_buf() then
+            vim.cmd.buffer(p)
+        else
+            local alt = vim.fn.bufnr("#")
+            if alt > 0 and vim.api.nvim_buf_is_valid(alt) then
+                vim.cmd.buffer(alt)
+            else
+                vim.cmd.bdelete()
+            end
+        end
+    end, { buffer = true, desc = "Back from cheatsheet" })
 end, {})
 
 vim.api.nvim_create_user_command("Registers", function()
@@ -124,6 +139,93 @@ for _, key in ipairs({ "<C-/>", "<C-_>", "<D-/>" }) do
     vim.keymap.set("x", key, "gc", { remap = true, desc = "Toggle comment selection" })
 end
 
+---------------------------------------------------------------------------
+-- VSCode-like editing (Cmd maps need Ghostty super-key passthrough; see cheats)
+---------------------------------------------------------------------------
+
+--- Feed keys so we stay in insert with correct autoindent (o/O).
+local function feed(keys)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
+end
+
+--- New line BELOW with autoindent; always end in insert mode.
+--- Uses `o` so smartindent / indentexpr / cindent all apply.
+local function open_line_below()
+    if vim.fn.mode():find("i", 1, true) then
+        -- One normal-mode `o` from insert: indent + remain insert.
+        feed("<C-o>o")
+    else
+        vim.cmd("normal! o")
+    end
+end
+
+--- New line ABOVE with autoindent; always end in insert mode.
+local function open_line_above()
+    if vim.fn.mode():find("i", 1, true) then
+        feed("<C-o>O")
+    else
+        vim.cmd("normal! O")
+    end
+end
+
+-- Cmd/Opt/Ctrl+Enter: next line with indent, stay insert.
+-- Never accepts blink completion (blink maps these to hide+fallback).
+vim.keymap.set({ "n", "i" }, "<D-CR>", open_line_below, { desc = "Open line below (indent, stay insert)" })
+vim.keymap.set({ "n", "i" }, "<M-CR>", open_line_below, { desc = "Open line below (indent, stay insert)" })
+vim.keymap.set({ "n", "i" }, "<C-CR>", open_line_below, { desc = "Open line below (indent, stay insert)" })
+
+-- Cmd+Shift+Enter: line above with indent, stay insert.
+vim.keymap.set({ "n", "i" }, "<D-S-CR>", open_line_above, { desc = "Open line above (indent, stay insert)" })
+vim.keymap.set({ "n", "i" }, "<M-S-CR>", open_line_above, { desc = "Open line above (indent, stay insert)" })
+vim.keymap.set({ "n", "i" }, "<C-S-CR>", open_line_above, { desc = "Open line above (indent, stay insert)" })
+
+-- Cmd+Shift+K: delete line (or visual lines).
+vim.keymap.set("n", "<D-S-k>", "dd", { desc = "VSCode: delete line" })
+vim.keymap.set("x", "<D-S-k>", ":delete<CR>", { desc = "VSCode: delete lines" })
+vim.keymap.set("i", "<D-S-k>", "<C-o>dd", { desc = "VSCode: delete line" })
+
+--- Duplicate current line below/above; move cursor to the new line, same column.
+local function duplicate_line(direction)
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    local max_col = #line
+    local new_col = math.min(col, max_col)
+    if direction == "below" then
+        vim.api.nvim_buf_set_lines(0, row, row, false, { line })
+        vim.api.nvim_win_set_cursor(0, { row + 1, new_col })
+    else
+        vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, { line })
+        -- New line is inserted at `row`; original shifts down.
+        vim.api.nvim_win_set_cursor(0, { row, new_col })
+    end
+end
+
+-- Option+Shift+j/k: clone line below / above (also works in visual).
+-- Cursor stays on the same column of the newly created line (not column 0).
+vim.keymap.set({ "n", "i" }, "<M-S-j>", function()
+    duplicate_line("below")
+end, { desc = "VSCode: duplicate line below (keep column)" })
+vim.keymap.set({ "n", "i" }, "<M-S-k>", function()
+    duplicate_line("above")
+end, { desc = "VSCode: duplicate line above (keep column)" })
+vim.keymap.set("x", "<M-S-j>", ":t'><CR>gv", { desc = "VSCode: duplicate selection below" })
+vim.keymap.set("x", "<M-S-k>", ":t'<-1<CR>gv", { desc = "VSCode: duplicate selection above" })
+
+-- Cmd+] / Cmd+[: indent / outdent (keep visual selection).
+vim.keymap.set("n", "<D-]>", ">>", { desc = "VSCode: indent" })
+vim.keymap.set("n", "<D-[>", "<<", { desc = "VSCode: outdent" })
+vim.keymap.set("x", "<D-]>", ">gv", { desc = "VSCode: indent" })
+vim.keymap.set("x", "<D-[>", "<gv", { desc = "VSCode: outdent" })
+vim.keymap.set("i", "<D-]>", "<C-t>", { desc = "VSCode: indent" })
+vim.keymap.set("i", "<D-[>", "<C-d>", { desc = "VSCode: outdent" })
+
+-- Terminal-friendly mirrors (Cmd often missing): Ctrl+] / Ctrl+[ for indent
+-- (Ctrl+[ is Esc in raw terminals — skip). Use Option+] / Option+[ instead.
+vim.keymap.set("n", "<M-]>", ">>", { desc = "Indent line" })
+vim.keymap.set("n", "<M-[>", "<<", { desc = "Outdent line" })
+vim.keymap.set("x", "<M-]>", ">gv", { desc = "Indent selection" })
+vim.keymap.set("x", "<M-[>", "<gv", { desc = "Outdent selection" })
+
 -- Move selected lines up and down in Visual Mode
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
@@ -192,10 +294,19 @@ vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end)
 vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end)
 vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end)
 vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end)
-vim.keymap.set("v", "<leader>f", function()
-    vim.lsp.buf.format({ range = true })
+vim.keymap.set("x", "<leader>f", function()
+    -- Visual mode: conform formats the selection only (not the whole buffer).
+    require("conform").format({ async = false, lsp_fallback = true, timeout_ms = 500 })
 end, { desc = "Format selection" })
 
+
+
+
+
+
+
+-- Others
+vim.keymap.set({'n', 'o', 'v'}, '9', '$', {desc='Move to the end of sentence ~Mapped to $'})
 
 -- TreeSitter
 
@@ -225,5 +336,58 @@ vim.keymap.set("n", "<leader>tt", function()
     toggleterm_current_dir()
 end, { desc = "Toggle terminal in current file directory" })
 
+-- Run: pipeline (if steps set) else current file. Pane auto-hides on next editor action.
+vim.keymap.set("n", "<leader>rr", function()
+    require("sp4ss.runner").run()
+end, { desc = "Run pipeline or current file" })
+vim.keymap.set("n", "<leader>rl", function()
+    require("sp4ss.runner").run_last()
+end, { desc = "Re-run last command" })
+vim.keymap.set("n", "<leader>rt", function()
+    require("sp4ss.runner").toggle()
+end, { desc = "Toggle run/output pane" })
+vim.keymap.set("n", "<leader>re", function()
+    require("sp4ss.runner").edit()
+end, { desc = "Edit sequential run steps" })
+vim.keymap.set("n", "<leader>ra", function()
+    require("sp4ss.runner").add()
+end, { desc = "Add a sequential run step" })
+
 -- Mouse Menu
 vim.opt.mouse = 'a'
+
+---------------------------------------------------------------------------
+-- VS Code-ish word motion: `vw` on last token after `.` stays on this line
+-- Default Vim `w` jumps to the first word of the *next* line at EOL.
+---------------------------------------------------------------------------
+local function smart_word_motion(big)
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local line = vim.api.nvim_get_current_line()
+    -- Next word/WORD *start* after the cursor (W = no wrap around file).
+    local pat = big and [[\(^\|\s\)\zs\S]] or [[\<\k]]
+    local pos = vim.fn.searchpos(pat, "Wn")
+    if pos[1] ~= 0 and pos[1] == row then
+        return big and "W" or "w"
+    end
+
+    -- Last token on this line: move to its end, never the next line.
+    -- If already on the last non-blank char, stay put (empty motion).
+    local last_col = line:find("%S%s*$") -- 1-based index of last non-blank
+    if not last_col then
+        return ""
+    end
+    -- nvim col is 0-based; stay if cursor is already at/after last non-blank.
+    if col + 1 >= last_col then
+        return ""
+    end
+    return big and "E" or "e"
+end
+
+vim.keymap.set({ "x", "o" }, "w", function()
+    return smart_word_motion(false)
+end, { expr = true, desc = "word forward (no next-line jump)" })
+
+vim.keymap.set({ "x", "o" }, "W", function()
+    return smart_word_motion(true)
+end, { expr = true, desc = "WORD forward (no next-line jump)" })
+

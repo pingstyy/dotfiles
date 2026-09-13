@@ -10,6 +10,7 @@ return {
         clear_in_insert_mode = false,
         download_remote_images = true,
         only_render_image_at_cursor = true, -- Highly recommended in tmux to prevent ghosting bugs
+        floating_windows = false,
         filetypes = { "markdown", "vimwiki" },
       },
     },
