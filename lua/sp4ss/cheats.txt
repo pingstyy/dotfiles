@@ -1,5 +1,17 @@
 SP4SS NEOVIM CHEATSHEET
-Leader: Space
+Leader: Space  (always works)
+No-leader (NORMAL only). Space+key ALWAYS still works (fallback).
+  Every Space XY also XY:  tt  rr  rl  rt  re  ra  ff  fb  ii  il  ha  …
+  First letter waits ~400ms, then Vim meaning if you did NOT finish the pair
+    i then wait = insert     t then x = till x     tt = terminal
+  e             explorer (normal). Space e fallback. de/ce/ye still end-of-word
+  g wait        TOP of file
+  gg            lazygit (Space gg fallback)
+  G             END of file
+  0 / 9         start / end of line
+  gd gs gf      still work if second key before timeout
+  NOT cloned    gg as top (that's g wait), digits, / : ? .  (search/repeat)
+  v / V         selection / Line Selection
 
 DASHBOARD
 n                  shell: open Neovim dashboard
@@ -10,9 +22,12 @@ q                  dashboard: quit
 Space ?            open this file.  q  (or Ctrl-o) = go back to previous file
 
 COMPLETION / SNIPPETS
-Tab                next completion / next snippet placeholder
-Shift-Tab          previous completion / previous snippet placeholder
-Enter              accept selected completion (when menu open)
+Tab then j         next completion
+Tab then k         previous completion
+Tab / Shift-Tab    snippet placeholder next/prev (not menu walk)
+Enter              NEW LINE only (does NOT accept completion)
+Ctrl-y             accept selected completion
+Option-1..9        accept dropdown item N
 Cmd/Opt/Ctrl-Enter new line BELOW with indent, stay INSERT (ignore menu)
 Cmd/Opt/Ctrl-S-Enter new line ABOVE with indent, stay INSERT
 Option-Space       show completion + docs (also Ctrl-Space)
@@ -194,7 +209,8 @@ Space v r r        references
 Space v d          diagnostic popup
 
 FILES / EXPLORER (Snacks sidebar; netrw disabled)
-Space e            smart explorer:
+Space e            smart explorer (always)
+e                  same (normal mode). Space e fallback. de/ce still end-of-word
                      closed  -> open
                      open elsewhere -> focus (tree stays expanded)
                      focused -> close
@@ -223,8 +239,8 @@ n / N              next/prev search result, centered
 TERMINAL / QUICKFIX / GIT
 Space t t          interactive terminal in current file dir
 Ctrl-\             float terminal
-Space r r / r l / r t / r e / r a   run / last / pane / edit steps / add step
-Space i i / i l / i c               iron REPL / send line / send visual
+Space r r  OR  rr     run / last / pane / edit / add  (rl rt re ra too)
+Space i i / i l / i c  iron REPL (KEEP Space — i is insert, not cloned)
 Esc                leave terminal mode
 Space c o          quickfix open
 Space c n/p        quickfix next/prev

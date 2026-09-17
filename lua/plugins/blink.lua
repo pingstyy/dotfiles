@@ -43,9 +43,14 @@ return {
     keymap = (function()
       local keymap = {
         preset = 'none',
-        ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+        ['<Tab>'] = { 'select_and_accept',  'fallback' },
+        ['<C-y>'] = { 'select_and_accept', 'snippet_forward', 'fallback' },
         ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
-        ['<CR>'] = { 'select_and_accept', 'fallback' },
+        ['<CR>'] = {'fallback' },
+        -- ['<Tab>j'] = { 'select_next', 'snippet_forward', 'fallback' },
+        -- ['<S-Tab>j'] = {'snippet_forward', 'fallback' },
+        -- ['<Tab>k'] = { 'select_prev', 'snippet_forward', 'fallback' },
+        -- ['<S-Tab>k'] = {'snippet_backward', 'fallback' },
         ['<M-CR>'] = { 'hide', 'fallback' },
         ['<D-CR>'] = { 'hide', 'fallback' },
         ['<C-CR>'] = { 'hide', 'fallback' },
@@ -99,7 +104,7 @@ return {
       },
       ghost_text = { enabled = true },
       list = {
-        selection = { preselect = true, auto_insert = false },
+        selection = { preselect = true, auto_insert = true },
         -- Cap total completion rows (menu height tracks this; fewer if less match).
         max_items = 15,
       },
@@ -220,10 +225,13 @@ return {
     },
   },
   config = function(_, opts)
+    vim.o.timeout= true
+    vim.o.timeoutlen = 200 -- ms 
+    vim.o.ttimeoutlen= 10 -- ms 
     require('blink.cmp').setup(opts)
     -- After setup (and async fuzzy download), patch the crashy emitter.
     patch_emit_completions()
     vim.schedule(patch_emit_completions)
-    vim.defer_fn(patch_emit_completions, 500)
+    vim.defer_fn(patch_emit_completions, 50 )
   end,
 }

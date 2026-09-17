@@ -117,8 +117,11 @@ local function safe_quit_all(write_first)
 end
 
 vim.keymap.set("n", "<leader>w", vim.cmd.w)
+vim.keymap.set("n", "w", vim.cmd.w)
 vim.keymap.set("n", "<leader>wq", function() safe_quit_all(true) end)
+vim.keymap.set("n", "wq", function() safe_quit_all(true) end)
 vim.keymap.set("n", "<leader>uu", function() safe_quit_all(true) end)
+vim.keymap.set("n", "uu", function() safe_quit_all(true) end)
 vim.keymap.set("n", "<leader>rq", function() safe_quit_all(false) end)
 vim.keymap.set("n", "<leader>qa", function() safe_quit_all(false) end)
 vim.keymap.set("n", "<leader>we", function()
@@ -239,6 +242,7 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set({ "n", "v" }, "<leader>c", [["+y]])
 vim.keymap.set("n", "<leader>c", [["+Y]])
 -- Paste without losing the current register
+vim.keymap.set("x", "p", [["_dP]])
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
 vim.keymap.set("n", "<leader>yp", "<cmd>CopyAbsPath<CR>", { desc = "Copy absolute file path" })
@@ -306,7 +310,9 @@ end, { desc = "Format selection" })
 
 
 -- Others
-vim.keymap.set({'n', 'o', 'v'}, '9', '$', {desc='Move to the end of sentence ~Mapped to $'})
+vim.keymap.set({ "n", "o", "v" }, "0", "0", { desc = "Start of line" })
+vim.keymap.set({ "n", "o", "v" }, "9", "$", { desc = "End of line" })
+vim.keymap.set({ "n", "o", "v" }, "G", "G", { desc = "End of file" })
 
 -- TreeSitter
 
@@ -335,6 +341,9 @@ vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]])
 vim.keymap.set("n", "<leader>tt", function()
     toggleterm_current_dir()
 end, { desc = "Toggle terminal in current file directory" })
+vim.keymap.set("n", "tt", function()
+    toggleterm_current_dir()
+end, { desc = "Toggle terminal in current file directory (no leader)" })
 
 -- Run: pipeline (if steps set) else current file. Pane auto-hides on next editor action.
 vim.keymap.set("n", "<leader>rr", function()
