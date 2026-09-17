@@ -261,3 +261,39 @@ cd ls 2            jump to directory stack item 2
 MAC KEY NOTES
 Cmd often never reaches terminal Neovim (Terminal.app / iTerm swallow it).
 Prefer Option-1..9 (completion) and Ctrl-/ in the terminal; Cmd-* needs Ghostty unbind.
+
+
+--- mini.diff (replaces gitsigns) ---
+gh = apply hunk (visual/operator) | ghip = apply paragraph
+gH = reset hunk | gHip = reset paragraph
+gh = textobject hunk range (dgh = delete hunk)
+[H [h ]h ]H = first/prev/next/last hunk
+<leader>gd = toggle overlay (shows deleted lines as virtual text)
+<leader>gt = toggle diff ON/OFF per buffer (your thin gutter: green add=▎ yellow change=▎ red delete=▁)
+
+--- trouble.nvim ---
+<leader>xx = toggle diagnostics (all) | same key again = OFF
+<leader>xX = toggle buffer diagnostics only
+<leader>xs = toggle symbols (right)
+<leader>xl = toggle loclist
+<leader>xq = toggle quickfix
+<leader>xt = force OFF / close Trouble
+q / <esc> inside trouble = close
+
+-- GitGraph (isakbm/gitgraph.nvim)
+<leader>gl  = gitgraph draw ALL branches (5000)
+<leader>gg  = gitgraph draw current branch only
+In graph: <CR> = DiffviewOpen commit, V+<CR> = range diff
+
+-- Undotree (mbbill/undotree)
+<leader>u   = UndotreeToggle
+In panel: j/k = navigate, p = diff, q = close, <leader>u again = hide
+
+-- GitGraph (isakbm/gitgraph.nvim)
+<leader>gl  = gitgraph draw ALL branches (5000)
+<leader>gg  = gitgraph draw current branch only
+In graph: <CR> = DiffviewOpen commit, V+<CR> = range diff
+
+-- Undotree (mbbill/undotree)
+<leader>u   = UndotreeToggle
+In panel: j/k = navigate, p = diff, q = close, <leader>u again = hide

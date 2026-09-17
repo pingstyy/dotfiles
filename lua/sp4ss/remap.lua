@@ -15,7 +15,7 @@ end
 local function copy_to_clipboard(text, label)
     vim.fn.setreg("+", text)
     vim.fn.setreg('"', text)
-    vim.notify(label .. ": " .. text)
+    vim.notify(label.. ": ".. text)
 end
 
 vim.api.nvim_create_user_command("CopyAbsPath", function()
@@ -32,7 +32,7 @@ end, {})
 
 vim.api.nvim_create_user_command("Cheat", function()
     local prev = vim.api.nvim_get_current_buf()
-    vim.cmd.edit(vim.fn.fnameescape(vim.fn.stdpath("config") .. "/lua/sp4ss/cheats.txt"))
+    vim.cmd.edit(vim.fn.fnameescape(vim.fn.stdpath("config").. "/lua/sp4ss/cheats.txt"))
     vim.b.sp4ss_cheat_prev = prev
     vim.keymap.set("n", "q", function()
         local p = vim.b.sp4ss_cheat_prev
@@ -65,11 +65,11 @@ vim.api.nvim_create_user_command("SnippetCheck", function(opts)
     require("sp4ss.snippets").check(opts.args)
 end, { nargs = "?" })
 
-vim.cmd([[cnoreabbrev <expr> cheat getcmdtype() == ':' && getcmdline() ==# 'cheat' ? 'Cheat' : 'cheat']])
-vim.cmd([[cnoreabbrev <expr> registers getcmdtype() == ':' && getcmdline() ==# 'registers' ? 'Registers' : 'registers']])
+vim.cmd([[cnoreabbrev <expr> cheat getcmdtype() == ':' && getcmdline() ==# 'cheat'? 'Cheat' : 'cheat']])
+vim.cmd([[cnoreabbrev <expr> registers getcmdtype() == ':' && getcmdline() ==# 'registers'? 'Registers' : 'registers']])
 
 local function toggleterm_current_dir()
-    vim.cmd("ToggleTerm dir=" .. vim.fn.fnameescape(current_dir()))
+    vim.cmd("ToggleTerm dir=".. vim.fn.fnameescape(current_dir()))
 end
 
 local function running_terminal_buffers()
@@ -84,7 +84,7 @@ local function running_terminal_buffers()
 
                 table.insert(terminals, {
                     bufnr = bufnr,
-                    name = name ~= "" and name or ("terminal buffer " .. bufnr),
+                    name = name ~= "" and name or ("terminal buffer ".. bufnr),
                 })
             end
         end
@@ -100,12 +100,12 @@ local function safe_quit_all(write_first)
         local lines = { "Quit cancelled: terminal jobs are still running." }
 
         for _, terminal in ipairs(terminals) do
-            table.insert(lines, string.format("  #%d %s", terminal.bufnr, terminal.name))
+            table.insert(lines, string.format(" #%d %s", terminal.bufnr, terminal.name))
         end
 
         table.insert(lines, "Exit those jobs first, then quit again.")
         vim.notify(table.concat(lines, "\n"), vim.log.levels.WARN)
-        vim.cmd("buffer " .. terminals[1].bufnr)
+        vim.cmd("buffer ".. terminals[1].bufnr)
         return
     end
 
@@ -142,9 +142,8 @@ for _, key in ipairs({ "<C-/>", "<C-_>", "<D-/>" }) do
     vim.keymap.set("x", key, "gc", { remap = true, desc = "Toggle comment selection" })
 end
 
----------------------------------------------------------------------------
 -- VSCode-like editing (Cmd maps need Ghostty super-key passthrough; see cheats)
----------------------------------------------------------------------------
+
 
 --- Feed keys so we stay in insert with correct autoindent (o/O).
 local function feed(keys)
@@ -252,9 +251,8 @@ vim.keymap.set("n", "<leader>?", "<cmd>Cheat<CR>", { desc = "Open cheatsheet" })
 vim.keymap.set("n", "<leader>xe", "<cmd>SnippetEdit<CR>", { desc = "Edit snippets for filetype" })
 vim.keymap.set("n", "<leader>xE", "<cmd>SnippetPackage<CR>", { desc = "Edit snippet package" })
 
-
 -- Telescope Remaps
--- Cheatsheet Mappings (Space + f + ...)
+-- Cheatsheet Mappings (Space + f +...)
 vim.keymap.set('n', '<leader>ff', function() require('telescope.builtin').find_files() end)
 vim.keymap.set('n', '<leader>fg', function() require('telescope.builtin').live_grep() end)
 vim.keymap.set('n', '<leader>fb', function() require('telescope.builtin').buffers() end)
@@ -266,8 +264,6 @@ vim.keymap.set('n', '<leader>pf', function() require('telescope.builtin').find_f
 vim.keymap.set('n', '<C-p>', function() require('telescope.builtin').git_files() end)
 vim.keymap.set('n', '<leader>ps',
     function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end)
-
-
 
 -- Harpoon (Safe & Compact)
 vim.keymap.set("n", "<leader>ha", function() require("harpoon"):list():add() end)
@@ -287,8 +283,6 @@ vim.keymap.set("n", "<C-y>", function() require("harpoon"):list():select(1) end)
 vim.keymap.set("n", "<C-t>", function() require("harpoon"):list():select(2) end)
 vim.keymap.set("n", "<C-n>", function() require("harpoon"):list():select(3) end)
 
-
-
 -- LSP
 vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end)
 vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end)
@@ -303,12 +297,6 @@ vim.keymap.set("x", "<leader>f", function()
     require("conform").format({ async = false, lsp_fallback = true, timeout_ms = 500 })
 end, { desc = "Format selection" })
 
-
-
-
-
-
-
 -- Others
 vim.keymap.set({ "n", "o", "v" }, "0", "0", { desc = "Start of line" })
 vim.keymap.set({ "n", "o", "v" }, "9", "$", { desc = "End of line" })
@@ -316,14 +304,11 @@ vim.keymap.set({ "n", "o", "v" }, "G", "G", { desc = "End of file" })
 
 -- TreeSitter
 
-
-
 -- UndoTree Toggle
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 
 -- Git Status (The main Fugitive command)
 vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
-
 
 -- Window Navigation
 vim.keymap.set('n', '<C-h>', '<C-w>h')
@@ -338,12 +323,22 @@ vim.keymap.set("n", "<leader>co", "<cmd>copen<CR>")
 
 -- Terminal Escape
 vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]])
+vim.keymap.set('t', '<C-[>', [[<C-\><C-n>]], { noremap = true, silent = true })
+vim.keymap.set('t', '<C-c>', [[<C-\><C-n>]], { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>tt", function()
     toggleterm_current_dir()
 end, { desc = "Toggle terminal in current file directory" })
 vim.keymap.set("n", "tt", function()
     toggleterm_current_dir()
 end, { desc = "Toggle terminal in current file directory (no leader)" })
+vim.keymap.set("t", "<leader>tt", function()
+    vim.cmd("stopinsert")
+    toggleterm_current_dir()
+end, { desc = "Toggle terminal from terminal mode" })
+vim.keymap.set("t", "tt", function()
+    vim.cmd("stopinsert")
+    toggleterm_current_dir()
+end, { desc = "Toggle terminal from terminal mode (no leader)" })
 
 -- Run: pipeline (if steps set) else current file. Pane auto-hides on next editor action.
 vim.keymap.set("n", "<leader>rr", function()
@@ -365,10 +360,9 @@ end, { desc = "Add a sequential run step" })
 -- Mouse Menu
 vim.opt.mouse = 'a'
 
----------------------------------------------------------------------------
 -- VS Code-ish word motion: `vw` on last token after `.` stays on this line
 -- Default Vim `w` jumps to the first word of the *next* line at EOL.
----------------------------------------------------------------------------
+
 local function smart_word_motion(big)
     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
     local line = vim.api.nvim_get_current_line()
@@ -399,4 +393,3 @@ end, { expr = true, desc = "word forward (no next-line jump)" })
 vim.keymap.set({ "x", "o" }, "W", function()
     return smart_word_motion(true)
 end, { expr = true, desc = "WORD forward (no next-line jump)" })
-
