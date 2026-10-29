@@ -78,7 +78,9 @@ local function load_file(buf, path)
         lines = { "(unreadable)" }
     end
     for i, line in ipairs(lines) do
-        if line:find("\0") then
+        -- readfile() stores NUL bytes as NL, so an embedded newline means binary.
+        -- nvim_buf_set_lines rejects any item that still contains a newline.
+        if type(line) ~= "string" or line:find("\n", 1, true) or line:find("\0", 1, true) then
             lines = { "[binary file]  " .. vim.fn.fnamemodify(path, ":t") }
             break
         end
@@ -156,6 +158,20 @@ function M.show(picker, item)
     local token = state.token
     vim.defer_fn(function()
         if token ~= state.token then
+            return
+        end
+        -- Hover only while the explorer is focused. A buffer change (:Cheat,
+        -- follow_file) refreshes the list and would otherwise float the
+        -- previous file over the editor.
+        local focused = false
+        if picker then
+            local ok, yes = pcall(function()
+                return picker:is_focused()
+            end)
+            focused = ok and yes or false
+        end
+        if not focused then
+            hide()
             return
         end
         if not item or item.dir or type(item.file) ~= "string" or item.file == "" then

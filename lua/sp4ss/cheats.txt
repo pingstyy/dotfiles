@@ -1,181 +1,9 @@
-SP4SS NEOVIM CHEATSHEET
-Leader: Space  (always works)
-No-leader (NORMAL only). Space+key ALWAYS still works (fallback).
-  Every Space XY also XY:  tt  rr  rl  rt  re  ra  ff  fb  ii  il  ha  …
-  First letter waits ~400ms, then Vim meaning if you did NOT finish the pair
-    i then wait = insert     t then x = till x     tt = terminal
-  e             explorer (normal). Space e fallback. de/ce/ye still end-of-word
-  g wait        TOP of file
-  gg            lazygit (Space gg fallback)
-  G             END of file
-  0 / 9         start / end of line
-  gd gs gf      still work if second key before timeout
-  NOT cloned    gg as top (that's g wait), digits, / : ? .  (search/repeat)
-  v / V         selection / Line Selection
-
-DASHBOARD
-n                  shell: open Neovim dashboard
-c                  dashboard: open config picker
-n                  dashboard: new buffer
-q                  dashboard: quit
-:Cheat / :cheat    open this file
-Space ?            open this file.  q  (or Ctrl-o) = go back to previous file
-
-COMPLETION / SNIPPETS
-Tab then j         next completion
-Tab then k         previous completion
-Tab / Shift-Tab    snippet placeholder next/prev (not menu walk)
-Enter              NEW LINE only (does NOT accept completion)
-Ctrl-y             accept selected completion
-Option-1..9        accept dropdown item N
-Cmd/Opt/Ctrl-Enter new line BELOW with indent, stay INSERT (ignore menu)
-Cmd/Opt/Ctrl-S-Enter new line ABOVE with indent, stay INSERT
-Option-Space       show completion + docs (also Ctrl-Space)
-Cmd-1..9 / Cmd-0   jump to open file tab 1..10 (tiny banner)
-Option-1..9        accept dropdown item N (menu shows 1..9)
-Option-j/k         scroll completion docs
-Menu               numbered rows + source name (LSP / Buffer / Case / …)
-Sources            snippets (boosted) > lsp > case > buffer > path
-Snippets           personal only (friendly-snippets OFF)
-LIVE COMPLETION (no Esc — pops while you type)
-  Case (any filetype): 2+ letter word → snake / kebab / camel / Pascal / …
-    examples: foo_bar  foo-bar  fooBar  myname
-  Class (.py only): 3+ letter word → always offers 4 scaffolds:
-    ◆ class + init + call
-    ◆ class + init
-    ◆ @dataclass
-    ◆ @dataclass + import
-  Menu max 15 rows; Option/Ctrl-Space forces show if hidden
-  Restart nvim after config changes
-Python dunders     init/call/len… (triggers: init, call, len, …)
-Case source        separator variants while typing multi-part names:
-                   foo-bar / foo_bar / foo--bar / Foo__Bar (any N words)
-                   also: foo__bar, Foo_Bar, Foo--Bar, Foo-Bar
-                   runs of -/_ collapse for splitting
-Fuzzy match        Rust matcher: case-insensitive; skips typos; _ ≈ -
-                   "selfatn" -> "Self_Attention_Score" (if in LSP/buffer)
-                   "self-attention" -> "Self_Attention_Score"
-                   Needs the symbol to already exist OR use Case variants
-If empty menu      Option/Ctrl-Space; check :LspInfo; type 2+ chars
-:SnippetEdit       edit snippets for current filetype
-:SnippetEdit lua   edit snippets for a filetype
-:SnippetPackage    edit snippets/package.json
-:SnippetCheck init check if custom snippet prefix exists
-Snippet files      ~/.config/nvim/snippets/*.json
-
-COMMENTING (language-aware via commentstring)
-Ctrl-/             toggle comment line / visual selection (terminal)
-Ctrl-_             same (many Mac terminals send C-/ as C-_)
-Cmd-/              toggle comment (GUI only; terminal often swallows Cmd)
-Visual + above     comment/uncomment all selected lines
-Note               uses Neovim built-in gc/gcc (// # -- etc by filetype)
-
-PICKERS / SEARCH
-Space Space        smart file picker
-Space f f          find files
-Space f c          config files
-Space f g          git files
-Space f r          recent files
-Space /            grep project
-Space s r          registers picker
-Space s c          command history
-Space s k          keymaps
-Space s q          quickfix picker
-Space ?            open cheatsheet (q or Ctrl-o = back)
-
-PATHS / REGISTERS
-"%p                paste current relative file path in normal mode
-Ctrl-r %           paste current relative file path in insert mode
-:let @+ = @%       copy relative path register to system clipboard
-:let @+ = expand('%:p') copy absolute path to system clipboard
-Space y p          copy absolute file path
-Space y r          copy relative file path
-Space y c          copy cwd
-:Registers         registers picker
-
-EDITING
-Space w            save
-Space w e          save then open/focus file explorer
-Space w q          save all and quit
-Space u u          safe save-all quit
-Space r q          safe quit all
-Visual J/K         move selected lines down/up
-Space c            yank to system clipboard
-Visual Space p     paste over selection without replacing yank
-Visual Space f     format selected range only (save does NOT format whole file)
-Cursor on word     light-bg highlight all same tokens in file
-]] / [[           next / prev LSP reference (Snacks.words)
-vw / vW            select forward word; last token on line does NOT jump to next line
-viw                select whole word under cursor (always precise)
-
-VSCODE-LIKE LINE EDITS (Cmd needs GUI or iTerm key passthrough)
-Cmd/Opt/Ctrl-Enter new line below + autoindent, stay insert (never accept menu)
-Cmd/Opt/Ctrl-S-Enter new line above + autoindent, stay insert
-Enter              accept selected completion (when menu open)
-Cmd-Shift-K        delete current line (visual: delete selected lines)
-Option-Shift-j     duplicate line/selection below (cursor keeps column)
-Option-Shift-k     duplicate line/selection above (cursor keeps column)
-Cmd-]              indent line / selection
-Cmd-[              outdent line / selection
-Option-] / [       indent / outdent (terminal-friendly)
-
-LIBRARY / PACKAGE COMPLETIONS (all LSPs)
-Typing pkg.sub.xxx → API symbols from installed deps (not random buffer words).
-Needs correct project env/toolchain for that language:
-  Python   :PythonSelectEnv  or conda activate / .venv before nvim
-           :PythonShowEnv    show interpreter (pyright + runner)
-  Go/Rust/JS/… open project root (go.mod / Cargo.toml / package.json);
-               start nvim from a shell that has the right toolchain on PATH
-
-RUN (pane auto-closes on insert / search / visual / move / picker / other pane)
-Space r r          if this project has steps → run them in order (joined &&)
-                   else save + run current file (filetype default)
-                   focus STAYS in editor; first key/click in editor HIDES pane
-Space r l          re-run the exact last command string
-Space r t          toggle output pane (also auto-hides on next editor action)
-Space r e          edit sequential steps (one cmd per line). :w save
-Space r a          add one step (prompt). delete a line in Space r e to remove
-Space t t          free interactive shell (toggleterm, current file dir)
-Ctrl-\             toggle float terminal (interactive)
-Esc                leave terminal mode → normal mode
-Pipeline           per git-root (or cwd). # comments + blank lines skipped
-                   example:
-                     make build
-                     cd build
-                     ./filerun
-                     xprof ./fileout
-                   →  make build && cd build && ./filerun && xprof ./fileout
-                   fail in a step stops the rest (that's &&). use `;` in a line
-                   if that step must not abort the chain.
-                   empty file = Space r r falls back to current-file run
-Filetype cmds      python→conda/venv python; go→go run; rust→cargo run;
-                   js/ts→node/tsx; c/cpp→compile+run; sh→bash/zsh; …
-Python env         current conda/venv, else last pick (modal-env etc)
-                   :PythonSelectEnv  pick   :PythonShowEnv  show
-                   iron + runner + new tmux panes all use this env
-
-IRON REPL (ipython in current env; pane hides on editor activity)
-Space i i          toggle REPL (right split, ~30%)
-Space i R          restart REPL (picks env again)
-Space i h          hide   Space i F  focus
-Space i l / i p    send line / paragraph
+SP
 Space i c          send motion / visual selection
 Space i b          send # %% code block
 Space i f          send file
 Space i x / i q    interrupt / quit kernel
 Space i C          clear REPL
-
-FILE TABS (tiny top banner, max 10)
-How tabs fill:
-  start            last-used files (vim oldfiles) that still exist
-  open a file      auto-add (Space Space / explorer / :e / gf)
-  already in list  no shuffle (Cmd-N numbers stay put)
-  over 10          oldest non-current drops
-Cmd-1..9  Cmd-0    jump to file 1..10
-Cmd-Ctrl-h/l       prev/next tab (also Cmd-Ctrl-Left/Right)
-Cmd-w              drop from tabs + close buffer
-click tab          jump; middle-click close
-DIY                just open the file. that IS "add to tabs"
 
 MULTI-CURSOR (non-continuous lines)
 Option-Ctrl-j/k    add cursor on line below / above
@@ -189,20 +17,28 @@ Ctrl-click         add/remove cursor with mouse
 Ctrl-q             toggle multi-cursors (main only / all)
 Esc                clear multi-cursors (when active)
 
-Ghostty / Mac NOTE (Cmd keys)
-Ghostty DEFAULTS steal keys before Neovim:
-  Cmd+Enter  = toggle_fullscreen   → unbound in ghostty config
-  Cmd+1..9/0 = goto_tab            → unbound (nvim file tabs)
-  Cmd+w      = close_surface       → unbound (nvim close file tab)
+Ghostty / Mac NOTE
+Ctrl+letter        reaches Neovim. Ghostty does not bind Ctrl+h/j/k/l/w.
+Ctrl+Tab           Ghostty next terminal tab (Ctrl+Shift+Tab = previous)
+Cmd is Ghostty's window modifier. These defaults are unbound so Neovim gets them:
+  Cmd+Enter  fullscreen → unbound. Fullscreen is Cmd+Ctrl+F
+  Cmd+1..9/0 tabs / font reset → unbound (nvim Harpoon 1..10)
+  Cmd+w      close surface → unbound
+Window splits      backtick, then v/h/arrows (not Ctrl)
 Config: ~/Library/Application Support/com.mitchellh.ghostty/config
 Reload: Cmd+Shift+,  (or restart Ghostty)
-Fullscreen now: Cmd+Ctrl+F
 Option-as-Meta: macos-option-as-alt=left  → use LEFT Option for Opt+N
 If Cmd+N still does nothing:  ghostty +list-keybinds | rg 'super\+(enter|[1-9])'
 
 LSP
-g d                definition
-K                  hover
+g d                open definition (jumps). Ctrl-o = back
+Ctrl-t             Harpoon file 2 (not tag-stack back)
+g k                preview definition (picker + source). Enter = open, Esc = stay
+K                  hover docs for the symbol under the cursor
+s s                select current scope (linewise)
+                   function or loop: innermost one, from its def through its end
+                   else: this line through the blank line above and below
+Space s y          document symbol list (ss is scope, not symbols)
 Space v c a        code action
 Space v r n        rename
 Space v r r        references
@@ -224,13 +60,17 @@ a / r / d          add / rename / delete
 y / p              yank path / paste
 H / I              toggle hidden / gitignored
 -                  Oil: open parent directory of current file
-Tip                <C-w>v duplicates current buffer (normal Vim).
-                   Prefer Ctrl-v / Ctrl-s from explorer for a different file.
+Tip                Ctrl-w saves this file. Ctrl-h/j/k/l move between windows.
+                   Ctrl-v / Ctrl-s here open the selected file in a split.
 
-NAVIGATION -/ harpoon
-Space h a          add file to Harpoon
-Space h e          Harpoon menu
-Space 1..4         Harpoon file 1..4
+NAVIGATION -/ harpoon (no file banner; list grows with every add)
+Space h a   OR  ha   add this file. notify shows the new count
+Space h e   OR  he   menu of every mark (window grows, then scrolls)
+Space h n   OR  hn   next mark (wraps)
+Space h p   OR  hp   previous mark (wraps)
+Space 1..4         jump to mark 1..4
+Cmd-1..9 / Cmd-0   jump to mark 1..10
+In the menu        j/k move, Enter opens, dd deletes a line, q saves and closes
 Ctrl-p             git files
 Ctrl-h/j/k/l       move windows
 Ctrl-d/u           half-page down/up, centered
@@ -240,12 +80,22 @@ TERMINAL / QUICKFIX / GIT
 Space t t          interactive terminal in current file dir
 Ctrl-\             float terminal
 Space r r  OR  rr     run / last / pane / edit / add  (rl rt re ra too)
-Space i i / i l / i c  iron REPL (KEEP Space — i is insert, not cloned)
+ii / il / ic        iron REPL (same as Space i …). i then wait = insert
 Esc                leave terminal mode
 Space c o          quickfix open
 Space c n/p        quickfix next/prev
-Space g s          git status
-Space g g          lazygit
+Space g s          git status picker (bare gs too)
+Space g g          lazygit (bare gg too). NOT gitgraph
+Space g l          git log
+Space g G          gitgraph current branch
+Space g A          gitgraph all branches
+Space g d          diff overlay toggle
+Space g t          diff signs on/off
+Space g v          diffview: working tree vs HEAD (all changed files)
+Space g C          diffview: this file across commits. Enter opens a commit
+Space g V          diffview: prompt base..head (HEAD~3..HEAD)
+Space g q          close diffview
+In diffview        g? help. Space b toggles the file panel. Space g q closes
 Space u            undo tree
 
 SHELL SHORTCUTS IN ~/.sp4ss
@@ -268,8 +118,8 @@ gh = apply hunk (visual/operator) | ghip = apply paragraph
 gH = reset hunk | gHip = reset paragraph
 gh = textobject hunk range (dgh = delete hunk)
 [H [h ]h ]H = first/prev/next/last hunk
-<leader>gd = toggle overlay (shows deleted lines as virtual text)
-<leader>gt = toggle diff ON/OFF per buffer (your thin gutter: green add=▎ yellow change=▎ red delete=▁)
+Space gd = toggle overlay (shows deleted lines as virtual text)
+Space gt = toggle diff ON/OFF per buffer (thin gutter: green add=▎ yellow change=▎ red delete=▁)
 
 --- trouble.nvim ---
 <leader>xx = toggle diagnostics (all) | same key again = OFF
@@ -281,19 +131,11 @@ gh = textobject hunk range (dgh = delete hunk)
 q / <esc> inside trouble = close
 
 -- GitGraph (isakbm/gitgraph.nvim)
-<leader>gl  = gitgraph draw ALL branches (5000)
-<leader>gg  = gitgraph draw current branch only
-In graph: <CR> = DiffviewOpen commit, V+<CR> = range diff
+Space gA  = gitgraph draw ALL branches (5000)
+Space gG  = gitgraph draw current branch only
+In graph: Enter = DiffviewOpen commit, V+Enter = range diff
+Space gg is lazygit. Space gl is git log. Those are not gitgraph.
 
 -- Undotree (mbbill/undotree)
-<leader>u   = UndotreeToggle
-In panel: j/k = navigate, p = diff, q = close, <leader>u again = hide
-
--- GitGraph (isakbm/gitgraph.nvim)
-<leader>gl  = gitgraph draw ALL branches (5000)
-<leader>gg  = gitgraph draw current branch only
-In graph: <CR> = DiffviewOpen commit, V+<CR> = range diff
-
--- Undotree (mbbill/undotree)
-<leader>u   = UndotreeToggle
-In panel: j/k = navigate, p = diff, q = close, <leader>u again = hide
+Space u   = UndotreeToggle
+In panel: j/k = navigate, p = diff, q = close, Space u again = hide

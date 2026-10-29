@@ -11,8 +11,10 @@ require("sp4ss.lazy")
 require("sp4ss.config")
 require("sp4ss.python_env").setup()
 require("sp4ss.runner").setup()
-require("sp4ss.tabs").setup()
 require("sp4ss.noleader").setup()
+
+-- File banner is off. Harpoon is the file list.
+vim.o.showtabline = 0
 
 -- Save undo history to a file so it persists after closing Neovim
 vim.opt.undofile = true

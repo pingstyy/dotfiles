@@ -204,7 +204,7 @@ return {
         { "gy",              function() Snacks.picker.lsp_type_definitions() end,                    desc = "Goto T[y]pe Definition" },
         { "gai",             function() Snacks.picker.lsp_incoming_calls() end,                      desc = "C[a]lls Incoming" },
         { "gao",             function() Snacks.picker.lsp_outgoing_calls() end,                      desc = "C[a]lls Outgoing" },
-        { "<leader>ss",      function() Snacks.picker.lsp_symbols() end,                             desc = "LSP Symbols" },
+        { "<leader>sy",      function() Snacks.picker.lsp_symbols() end,                             desc = "LSP Symbols" },
         { "<leader>sS",      function() Snacks.picker.lsp_workspace_symbols() end,                   desc = "LSP Workspace Symbols" },
         -- Other
         { "<leader>z",       function() Snacks.zen() end,                                            desc = "Toggle Zen Mode" },
@@ -217,8 +217,8 @@ return {
         { "<leader>gB",      function() Snacks.gitbrowse() end,                                      desc = "Git Browse",                 mode = { "n", "v" } },
         { "<leader>gg",      function() Snacks.lazygit() end,                                        desc = "Lazygit" },
         { "<leader>un",      function() Snacks.notifier.hide() end,                                  desc = "Dismiss All Notifications" },
-        { "<c-/>",           function() Snacks.terminal() end,                                       desc = "Toggle Terminal" },
-        { "<c-_>",           function() Snacks.terminal() end,                                       desc = "which_key_ignore" },
+        -- Ctrl-/ and Ctrl-_ stay the comment toggle in remap.lua.
+        -- Terminal toggle is Ctrl-\ and tt.
         { "]]",              function() Snacks.words.jump(vim.v.count1) end,                         desc = "Next Reference",             mode = { "n", "t" } },
         { "[[",              function() Snacks.words.jump(-vim.v.count1) end,                        desc = "Prev Reference",             mode = { "n", "t" } },
         {

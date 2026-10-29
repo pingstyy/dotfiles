@@ -66,7 +66,7 @@ return {
         local accept_nth = function(cmp)
           return cmp.accept({ index = i })
         end
-        -- Cmd-1..9 = file tabs (sp4ss.tabs). Completion pick stays Option-1..9.
+        -- Cmd-1..9 = Harpoon slots. Completion pick stays Option-1..9.
         keymap[string.format('<M-%d>', i)] = { accept_nth }
         keymap[string.format('<A-%d>', i)] = { accept_nth }
       end
@@ -142,7 +142,7 @@ return {
     },
     sources = {
       -- Buffer first in the list (and highest score_offset) so open-file words win.
-      default = { 'buffer', 'lsp', 'snippets', 'path', 'case' },
+      default = { 'buffer', 'lsp', 'snippets', 'path', 'words', 'case' },
       -- Python-only class scaffolds (not global — keeps cmdline clean).
       per_filetype = {
         python = { inherit_defaults = true, 'pyclass' },
@@ -187,6 +187,14 @@ return {
           score_offset = 90,
           min_keyword_length = 0,
           max_items = 12,
+        },
+        words = {
+          name = 'Words',
+          module = 'sp4ss.cmp_words',
+          -- Above case restyles, below LSP and buffer symbols.
+          score_offset = 40,
+          min_keyword_length = 2,
+          max_items = 6,
         },
         case = {
           name = 'Case',

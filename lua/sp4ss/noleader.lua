@@ -1,14 +1,15 @@
--- Space-leader maps still work. In NORMAL mode, some also work WITHOUT Space.
--- Rules (do not steal Vim):
---   * 2+ char Space maps are cloned leaderless (tt, rr, ff, ii, …).
---     First key waits timeoutlen, then Vim meaning (i=insert, t=till, …).
---   * `g` wait = top of file; `gg` = lazygit; `gd`/`gs`/`gf` still work (g-prefix).
---   * normal `e` = explorer (Space e still works). `de`/`ce`/`ye` unchanged.
+-- Space-leader maps still work. In NORMAL mode, the same pairs work WITHOUT Space.
+-- `lazy.setup` fires User VeryLazy before this module's setup() runs, so apply()
+-- is also scheduled immediately. The autocmd covers a setup that runs earlier.
+--
+-- `g` + timeout = top of file. `gg` = lazygit. Other g-keys (`gd`, `gs`, …) stay
+-- real maps when they exist; otherwise the pending key is forwarded once.
+-- Normal `e` = explorer. Operator-pending `e` stays free so `de`/`ce`/`ye` work.
 
 local M = {}
 
 local SKIP_EXACT = {
-    gg = true, -- go to first line
+    gg = true,
     gd = true,
     gD = true,
     gr = true,
@@ -26,14 +27,14 @@ local SKIP_EXACT = {
     ga = true,
     gu = true,
     gU = true,
-    gp = true, -- paste, cursor after
+    gp = true,
     gP = true,
 }
 
--- Only block prefixes we intercept ourselves, or keys that cannot start a
--- 2-key sequence. `t`/`i`/`r`/`f`/`h`/`s`/`u` ARE cloned (tt, ii, rr, …).
+-- Prefixes we dispatch ourselves, or keys that must not start a leaderless pair.
+-- `t`/`i`/`r`/`f`/`h`/`s`/`u` ARE cloned (tt, ii, rr, …).
 local SKIP_PREFIX = {
-    g = true, -- g-prefix dispatcher
+    g = true,
     ["."] = true,
     ["/"] = true,
     [":"] = true,
@@ -126,82 +127,76 @@ local function explorer_toggle()
     end
 end
 
-local function wait_key(ms)
-    local key
-    vim.wait(ms, function()
-        local n = vim.fn.getchar(0)
-        if n == 0 then
-            return false
-        end
-        if type(n) == "number" then
-            key = vim.fn.nr2char(n)
-        else
-            key = n
-        end
-        return true
-    end, 10)
-    return key
+local function lazygit()
+    local ok, Snacks = pcall(require, "snacks")
+    if ok and Snacks.lazygit then
+        Snacks.lazygit()
+    end
 end
 
-local function run_n_map(seq, count)
-    local map = vim.fn.maparg(seq, "n", false, true)
-    if type(map) ~= "table" or (not map.callback and (not map.rhs or map.rhs == "")) then
-        local leader = vim.g.mapleader == " " and "<Space>" or (vim.g.mapleader or "")
-        map = vim.fn.maparg(leader .. seq, "n", false, true)
+local function git_log()
+    local ok, Snacks = pcall(require, "snacks")
+    if ok and Snacks.picker and Snacks.picker.git_log then
+        Snacks.picker.git_log()
     end
-    if type(map) == "table" and map.callback then
-        return map.callback()
+end
+
+local function git_status()
+    local ok, Snacks = pcall(require, "snacks")
+    if ok and Snacks.picker and Snacks.picker.git_status then
+        Snacks.picker.git_status()
     end
-    if type(map) == "table" and map.rhs and map.rhs ~= "" then
-        local keys = vim.api.nvim_replace_termcodes(map.rhs, true, false, true)
-        vim.api.nvim_feedkeys(keys, map.noremap == 1 and "n" or "m", false)
+end
+
+-- Real two-key maps. Neovim's own timeoutlen picks `g` vs `gg` vs `gd`.
+-- No getchar/vim.wait: that path drops the second key (gg never reached lazygit).
+local G_BUILTIN = {
+    "e", "E", "j", "k", "0", "^", "$", "m", "M", "_", "+", "-",
+    "F", "f", "i", "v", "n", "N", "q", "w", "u", "U", "~", "x",
+    "*", "#", "%", "J", "t", "T", "p", "P", "&", ",", ";", "'", "`",
+}
+
+local function map_builtin_g(suffix)
+    local lhs = "g" .. suffix
+    -- noremap rhs = builtin. Operators (gu/gU/gq/…) still take the next motion.
+    vim.keymap.set("n", lhs, lhs, { noremap = true, desc = "builtin " .. lhs })
+end
+
+local function map_diff_hunk(lhs, action)
+    local m = vim.fn.maparg(lhs, "n", false, true)
+    if type(m) == "table" and m.desc and m.desc:lower():find("hunk", 1, true) then
         return
     end
-    local cmd = (count and count > 0) and ("normal! " .. count .. seq) or ("normal! " .. seq)
-    pcall(vim.cmd, cmd)
-end
-
-local function lhs_has_longer(prefix)
-    for _, m in ipairs(vim.api.nvim_get_keymap("n")) do
-        local lhs = m.lhs or ""
-        local rest = strip_leader(lhs) or lhs
-        if #rest > #prefix and rest:sub(1, #prefix) == prefix then
-            return true
-        end
-    end
-    return false
+    vim.keymap.set("n", lhs, function()
+        require("lazy").load({ plugins = { "mini.diff" } })
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(lhs, true, false, true), "m", false)
+    end, { desc = "Diff " .. action .. " hunk" })
 end
 
 local function map_g_prefix()
+    for _, suffix in ipairs(G_BUILTIN) do
+        if not already_mapped("g" .. suffix) then
+            map_builtin_g(suffix)
+        end
+    end
+    vim.keymap.set("n", "gg", lazygit, { desc = "Lazygit" })
+    vim.keymap.set("n", "<leader>gg", lazygit, { desc = "Lazygit" })
+    vim.keymap.set("n", "<leader>gl", git_log, { desc = "Git Log" })
+    vim.keymap.set("n", "gs", git_status, { desc = "Git Status" })
+    vim.keymap.set("n", "<leader>gs", git_status, { desc = "Git Status" })
+    map_diff_hunk("gh", "apply")
+    map_diff_hunk("gH", "reset")
+    -- snacks and mini.diff both bind <leader>gd. Cheats: overlay.
+    vim.keymap.set("n", "<leader>gd", function()
+        require("mini.diff").toggle_overlay(0)
+    end, { desc = "Diff overlay toggle" })
     vim.keymap.set("n", "g", function()
-        local count = vim.v.count
-        local seq = "g"
-        local c = wait_key(vim.o.timeoutlen)
-        if not c or c == "\27" then
-            pcall(vim.cmd, count > 0 and ("normal! " .. count .. "gg") or "normal! gg")
-            return
-        end
-        seq = seq .. c
-        if seq == "gg" then
-            local ok, Snacks = pcall(require, "snacks")
-            if ok then
-                Snacks.lazygit()
-            end
-            return
-        end
-        while lhs_has_longer(seq) do
-            local more = wait_key(vim.o.timeoutlen)
-            if not more or more == "\27" then
-                break
-            end
-            seq = seq .. more
-        end
-        run_n_map(seq, count)
-    end, { desc = "g wait=top  gg=lazygit  gd/gs/gf=same" })
+        local c = vim.v.count
+        vim.cmd((c > 0) and ("normal! " .. c .. "gg") or "normal! gg")
+    end, { desc = "g wait=top of file" })
 end
 
 local function map_e_explorer()
-    -- Normal `e` = explorer. Do NOT map operator-pending/visual, so de/ce/ye/ve still work.
     vim.keymap.set("n", "e", explorer_toggle, { desc = "Explorer (Space e also)" })
 end
 
@@ -215,31 +210,63 @@ function M.apply()
         if rest and allowed(rest) then
             local rhs = m.callback or m.rhs
             if rhs then
-                local ok = pcall(vim.keymap.set, "n", rest, rhs, {
+                pcall(vim.keymap.set, "n", rest, rhs, {
                     desc = (m.desc or rest) .. " (no leader)",
                     silent = m.silent == 1,
                     noremap = (m.noremap ~= 0),
                     expr = m.expr == 1,
                 })
-                if not ok then
-                    -- skip broken clone; leader map still works
-                end
             end
         end
     end
+
+    -- After the clone pass so Space ss / ss stay scope select
+    -- (snacks document symbols are Space sy).
+    local function scope_select()
+        require("sp4ss.scope_select").select()
+    end
+    vim.keymap.set("n", "ss", scope_select, { desc = "Select scope" })
+    vim.keymap.set("n", "<leader>ss", scope_select, { desc = "Select scope" })
+
+    vim.keymap.set("n", "gk", function()
+        local ok, Snacks = pcall(require, "snacks")
+        if not ok then
+            return
+        end
+        Snacks.picker.lsp_definitions({
+            auto_confirm = false,
+            jump = { tagstack = true, reuse_win = true },
+        })
+    end, { desc = "Preview definition" })
 end
 
 function M.setup()
-    -- Distinguish ff vs fx, rr vs rX, ee vs e. Keep which-key usable.
     if vim.o.timeoutlen > 500 then
         vim.o.timeoutlen = 400
+    end
+    -- lazy.setup() can fire VeryLazy before this setup() call. A later
+    -- VimEnter pass catches leader maps. The VeryLazy pass catches iron,
+    -- which maps <leader>ii only when that event loads the plugin.
+    local function safe_apply()
+        local ok, err = pcall(M.apply)
+        if not ok then
+            vim.schedule(function()
+                vim.notify("noleader: " .. tostring(err), vim.log.levels.ERROR)
+            end)
+        end
     end
     vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",
         callback = function()
-            vim.schedule(M.apply)
+            vim.schedule(safe_apply)
         end,
     })
+    vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function()
+            vim.schedule(safe_apply)
+        end,
+    })
+    vim.defer_fn(safe_apply, 300)
 end
 
 return M

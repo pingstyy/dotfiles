@@ -18,63 +18,80 @@ local function title(part)
   return part:sub(1, 1):upper() .. part:sub(2):lower()
 end
 
---- Split into lowercase word parts (snake, kebab, camel, Pascal).
+--- Word parts with the capitalization the user typed.
 local function split_parts(s)
-  if type(s) ~= 'string' or s == '' then
+  local parsed = require('sp4ss.word_suggest').parse(s)
+  if not parsed then
     return {}
   end
-
-  local normalized = s
-    :gsub('([a-z0-9])([A-Z])', '%1_%2')
-    :gsub('([A-Z]+)([A-Z][a-z])', '%1_%2')
-    :gsub('[-_]+', '_')
-    :gsub('^_+', '')
-    :gsub('_+$', '')
-
   local parts = {}
-  for part in normalized:gmatch('[^_]+') do
-    if part ~= '' then
-      table.insert(parts, part:lower())
+  for _, part in ipairs(parsed) do
+    if part.raw ~= '' then
+      parts[#parts + 1] = part.raw
     end
   end
   return parts
 end
 
---- Build style variants for any token (1+ parts).
-local function build_variants(parts)
+local function map_parts(parts, fn)
+  local out = {}
+  for i, part in ipairs(parts) do
+    out[i] = fn(part)
+  end
+  return out
+end
+
+--- Separator styles keep each word's case. Rewrites (lower, Pascal, SCREAMING)
+--- come after the style that matches what was typed, so the default does not recase.
+local function build_variants(parts, original)
   if #parts == 0 then
     return {}
   end
 
-  local titled = {}
-  for i, p in ipairs(parts) do
-    titled[i] = title(p)
+  local function join(list, sep)
+    return table.concat(list, sep)
   end
 
-  local snake = table.concat(parts, '_')
-  local kebab = table.concat(parts, '-')
-  local pascal = table.concat(titled, '')
-  local camel = pascal:sub(1, 1):lower() .. pascal:sub(2)
-  local screaming = snake:upper()
-  local pascal_snake = table.concat(titled, '_')
-  local pascal_kebab = table.concat(titled, '-')
-  local dsnake = table.concat(parts, '__')
-  local dkebab = table.concat(parts, '--')
-
-  local rows = {
-    { snake, 'snake' },
-    { kebab, 'kebab' },
-    { camel, 'camel' },
-    { pascal, 'Pascal' },
-    { pascal_snake, 'Pascal_Snake' },
-    { pascal_kebab, 'Pascal-Kebab' },
-    { screaming, 'SCREAMING' },
+  local preserved = {
+    { join(parts, '_'), 'snake' },
+    { join(parts, '-'), 'kebab' },
+    { join(parts, ''), 'camel' },
   }
-
   if #parts >= 2 then
-    table.insert(rows, { dsnake, 'snake__' })
-    table.insert(rows, { dkebab, 'kebab--' })
+    preserved[#preserved + 1] = { join(parts, '__'), 'snake__' }
+    preserved[#preserved + 1] = { join(parts, '--'), 'kebab--' }
   end
+
+  local rows = {}
+  local function add(text, style)
+    rows[#rows + 1] = { text, style }
+  end
+
+  local matched = false
+  for _, row in ipairs(preserved) do
+    if row[1] == original then
+      add(row[1], row[2])
+      matched = true
+    end
+  end
+  if not matched then
+    add(original, 'as typed')
+  end
+  for _, row in ipairs(preserved) do
+    if row[1] ~= original then
+      add(row[1], row[2])
+    end
+  end
+
+  local lower = map_parts(parts, string.lower)
+  local titled = map_parts(parts, function(part)
+    return title(part:lower())
+  end)
+  add(join(lower, '_'), 'lower_snake')
+  add(join(titled, ''), 'Pascal')
+  add(join(titled, '_'), 'Pascal_Snake')
+  add(join(titled, '-'), 'Pascal-Kebab')
+  add(join(lower, '_'):upper(), 'SCREAMING')
 
   return rows
 end
@@ -118,10 +135,10 @@ function source:get_completions(ctx, callback)
     local kind = require('blink.cmp.types').CompletionItemKind.Text
     local plain = vim.lsp.protocol.InsertTextFormat.PlainText
 
-    local seen = { [keyword] = true }
+    local seen = {}
     local items = {}
 
-    for rank, row in ipairs(build_variants(parts)) do
+    for rank, row in ipairs(build_variants(parts, keyword)) do
       local text, style = row[1], row[2]
       if text ~= '' and not seen[text] then
         seen[text] = true

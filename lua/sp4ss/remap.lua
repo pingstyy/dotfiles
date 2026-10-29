@@ -117,7 +117,9 @@ local function safe_quit_all(write_first)
 end
 
 vim.keymap.set("n", "<leader>w", vim.cmd.w)
-vim.keymap.set("n", "w", vim.cmd.w)
+-- Ctrl-w saves. Bare w stays the built-in next-word motion.
+-- Window jumps are Ctrl-h/j/k/l below (their rhs still calls the built-in <C-w>).
+vim.keymap.set("n", "<C-w>", vim.cmd.w, { desc = "Write" })
 vim.keymap.set("n", "<leader>wq", function() safe_quit_all(true) end)
 vim.keymap.set("n", "wq", function() safe_quit_all(true) end)
 vim.keymap.set("n", "<leader>uu", function() safe_quit_all(true) end)
@@ -265,23 +267,7 @@ vim.keymap.set('n', '<C-p>', function() require('telescope.builtin').git_files()
 vim.keymap.set('n', '<leader>ps',
     function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end)
 
--- Harpoon (Safe & Compact)
-vim.keymap.set("n", "<leader>ha", function() require("harpoon"):list():add() end)
-vim.keymap.set("n", "<leader>he", function()
-    local h = require("harpoon")
-    h.ui:toggle_quick_menu(h:list())
-end)
-
--- Toggle harpoon file selections using <leader>1, <leader>2, etc. (Conflict-free & Safe)
-vim.keymap.set("n", "<leader>1", function() require("harpoon"):list():select(1) end)
-vim.keymap.set("n", "<leader>2", function() require("harpoon"):list():select(2) end)
-vim.keymap.set("n", "<leader>3", function() require("harpoon"):list():select(3) end)
-vim.keymap.set("n", "<leader>4", function() require("harpoon"):list():select(4) end)
-
--- Optional Control-key maps (Note: <C-h> conflicts with split navigation, <C-s> can freeze terminals)
-vim.keymap.set("n", "<C-y>", function() require("harpoon"):list():select(1) end) -- alternative to avoid <C-h> conflict
-vim.keymap.set("n", "<C-t>", function() require("harpoon"):list():select(2) end)
-vim.keymap.set("n", "<C-n>", function() require("harpoon"):list():select(3) end)
+-- Harpoon maps live in lua/plugins/harpoon.lua (menu grows with the list).
 
 -- LSP
 vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end)
